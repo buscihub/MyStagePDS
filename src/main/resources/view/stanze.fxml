@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pkgControl.GestioneStanzeCtrl" stylesheets="@../css/style.css">
+    <top>
+        <HBox spacing="20" alignment="CENTER_LEFT" style="-fx-background-color: #333333; -fx-padding: 15px;">
+            <Label text="Gestione Stanze" style="-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;"/>
+            <Region HBox.hgrow="ALWAYS" />
+            <Button text="Torna al Profilo" onAction="#goToProfilo" styleClass="primary-button"/>
+        </HBox>
+    </top>
+    
+    <center>
+        <VBox alignment="CENTER" spacing="20.0" styleClass="main-container">
+            <padding>
+                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+            </padding>
+            <Label text="Le tue Stanze Condivise" styleClass="title-label"/>
+            
+            <ListView fx:id="stanzeList" prefHeight="200" prefWidth="400" />
+            
+            <Button text="+ Crea Nuova Stanza" onAction="#creaNuovaStanza" styleClass="primary-button"/>
+        </VBox>
+    </center>
+</BorderPane>

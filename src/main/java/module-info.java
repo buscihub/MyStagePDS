@@ -11,4 +11,8 @@ module shareroomafam {
     exports textmessage;
     exports pkgUtility;
     exports pkgServer;
+    exports pkgMain;
+    exports pkgControl;
+    
+    opens pkgControl to javafx.fxml;
 }
