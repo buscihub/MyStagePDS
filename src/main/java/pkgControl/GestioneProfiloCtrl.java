@@ -20,4 +20,15 @@ public class GestioneProfiloCtrl {
     public void doLogout(ActionEvent event) {
         Router.getInstance().navigate("login.fxml", "ShareRoomAfam - Login");
     }
+
+    @FXML
+    public void selezionaFile(ActionEvent event) {
+        javafx.stage.FileChooser fileChooser = new javafx.stage.FileChooser();
+        fileChooser.setTitle("Seleziona File da Caricare");
+        java.io.File file = fileChooser.showOpenDialog(null);
+        if (file != null) {
+            textmessage.ErrorText msg = new textmessage.ErrorText("File selezionato: " + file.getName());
+            msg.okay();
+        }
+    }
 }

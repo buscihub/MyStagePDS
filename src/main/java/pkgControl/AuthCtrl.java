@@ -41,4 +41,18 @@ public class AuthCtrl {
     public void goToLogin(ActionEvent event) {
         Router.getInstance().navigate("login.fxml", "ShareRoomAfam - Login");
     }
+
+    @FXML
+    public void handleRegistrazione(ActionEvent event) {
+        String email = emailField.getText();
+        String password = passwordField.getText();
+        
+        if (email == null || password == null || email.isEmpty() || password.isEmpty()) {
+            new ErrorText("Compilare tutti i campi.").okay();
+            return;
+        }
+
+        new ErrorText("Registrazione effettuata con successo!").okay();
+        Router.getInstance().navigate("login.fxml", "ShareRoomAfam - Login");
+    }
 }

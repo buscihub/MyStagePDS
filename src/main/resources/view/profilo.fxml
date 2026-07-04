@@ -34,7 +34,7 @@
             </HBox>
             
             <Label text="Carica un nuovo documento" style="-fx-font-weight: bold; -fx-padding: 20px 0 0 0;"/>
-            <Button text="Seleziona File..." styleClass="primary-button"/>
+            <Button text="Seleziona File..." onAction="#selezionaFile" styleClass="primary-button"/>
         </VBox>
     </center>
 </BorderPane>

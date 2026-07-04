@@ -10,4 +10,9 @@ public class VisualizzaProfiliCtrl {
     public void goToProfilo(ActionEvent event) {
         Router.getInstance().navigate("profilo.fxml", "ShareRoomAfam - Profilo");
     }
+
+    @FXML
+    public void cercaProfili(ActionEvent event) {
+        new textmessage.ErrorText("Ricerca completata (mock). Nessun risultato trovato.").okay();
+    }
 }

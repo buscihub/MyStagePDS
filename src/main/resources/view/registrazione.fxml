@@ -18,6 +18,6 @@
         <PasswordField fx:id="passwordField" promptText="Password" styleClass="input-field"/>
     </VBox>
 
-    <Button text="Registrati" onAction="#handleLogin" styleClass="primary-button"/>
+    <Button text="Registrati" onAction="#handleRegistrazione" styleClass="primary-button"/>
     <Button text="Torna al Login" onAction="#goToLogin" styleClass="link-button"/>
 </VBox>

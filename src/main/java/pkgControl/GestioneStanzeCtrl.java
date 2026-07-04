@@ -14,6 +14,6 @@ public class GestioneStanzeCtrl {
     @FXML
     public void creaNuovaStanza(ActionEvent event) {
         // Logica mock per creare una stanza
-        System.out.println("Stanza creata!");
+        new textmessage.ErrorText("Stanza creata con successo!").okay();
     }
 }

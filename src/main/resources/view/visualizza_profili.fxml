@@ -22,7 +22,7 @@
             
             <HBox spacing="10" alignment="CENTER">
                 <TextField promptText="Cerca per nome o professione..." styleClass="input-field" prefWidth="300"/>
-                <Button text="Cerca" styleClass="primary-button"/>
+                <Button text="Cerca" onAction="#cercaProfili" styleClass="primary-button"/>
             </HBox>
             
             <ListView fx:id="profiliList" prefHeight="300" prefWidth="500" />
