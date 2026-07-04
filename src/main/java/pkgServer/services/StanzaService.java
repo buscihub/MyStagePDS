@@ -1,14 +1,8 @@
 package pkgServer.services;
 
-import pkgBoundary.DBMSboundary;
-import java.sql.ResultSet;
-
 public class StanzaService {
     
-    private DBMSboundary dbms;
-
     public StanzaService() {
-        this.dbms = DBMSboundary.getInstance();
     }
 
     public String getHtmlForStanza(String link) {

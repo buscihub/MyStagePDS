@@ -1,6 +1,7 @@
 module shareroomafam {
     requires transitive java.sql;
-    requires javafx.controls;
+    requires transitive javafx.controls;
+    requires transitive javafx.graphics;
     requires javafx.fxml;
     requires jakarta.mail;
     requires jdk.httpserver;
