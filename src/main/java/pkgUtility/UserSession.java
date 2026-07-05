@@ -23,5 +23,16 @@ public class UserSession {
 
     public void logout() {
         this.utenteLoggato = null;
+        this.stanzaSelezionata = null;
+    }
+
+    private Integer stanzaSelezionata;
+
+    public Integer getStanzaSelezionata() {
+        return stanzaSelezionata;
+    }
+
+    public void setStanzaSelezionata(Integer stanzaSelezionata) {
+        this.stanzaSelezionata = stanzaSelezionata;
     }
 }

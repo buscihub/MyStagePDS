@@ -475,6 +475,29 @@ public class DBMSboundary {
         }
     }
 
+    public int deleteDBMSStanza(int idStanza) {
+        try {
+            // First delete constraints in CONTIENE and VISUALIZZAZIONE
+            String query1 = "DELETE FROM CONTIENE WHERE idStanza = ?";
+            PreparedStatement ps1 = getConnection().prepareStatement(query1);
+            ps1.setInt(1, idStanza);
+            ps1.executeUpdate();
+
+            String query2 = "DELETE FROM VISUALIZZAZIONE WHERE idStanza = ?";
+            PreparedStatement ps2 = getConnection().prepareStatement(query2);
+            ps2.setInt(1, idStanza);
+            ps2.executeUpdate();
+
+            String query3 = "DELETE FROM STANZA WHERE idStanza = ?";
+            PreparedStatement ps3 = getConnection().prepareStatement(query3);
+            ps3.setInt(1, idStanza);
+            return ps3.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
     public ResultSet queryDocumentiNonInStanza(int idStanza, String codiceFiscale) {
         try {
             String query = "SELECT * FROM DOCUMENTO WHERE codiceFiscaleArtist = ? AND idDocumento NOT IN (SELECT idDocumento FROM CONTIENE WHERE idStanza = ?)";

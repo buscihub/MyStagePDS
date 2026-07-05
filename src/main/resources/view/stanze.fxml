@@ -20,9 +20,18 @@
             </padding>
             <Label text="Le tue Stanze Condivise" styleClass="title-label"/>
             
-            <ListView fx:id="stanzeList" prefHeight="200" prefWidth="400" />
+            <TableView fx:id="stanzeTable" prefHeight="300" prefWidth="600">
+                <columns>
+                    <TableColumn fx:id="colNome" text="Nome Stanza" prefWidth="200"/>
+                    <TableColumn fx:id="colLink" text="Link Condivisione" prefWidth="250"/>
+                    <TableColumn fx:id="colAzioni" text="Azioni" prefWidth="150"/>
+                </columns>
+            </TableView>
             
-            <Button text="+ Crea Nuova Stanza" onAction="#creaNuovaStanza" styleClass="primary-button"/>
+            <HBox spacing="10" alignment="CENTER">
+                <TextField fx:id="nuovoNomeStanzaField" promptText="Nome nuova stanza..." prefWidth="200"/>
+                <Button text="+ Crea Nuova Stanza" onAction="#creaNuovaStanza" styleClass="primary-button"/>
+            </HBox>
         </VBox>
     </center>
 </BorderPane>
