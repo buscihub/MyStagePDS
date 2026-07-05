@@ -5,7 +5,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import pkgUtility.Router;
-import pkgBoundary.DBMSboundary;
 import textmessage.ErrorText;
 
 public class AuthCtrl {
