@@ -1,18 +1,58 @@
 package pkgBoundary;
 
 import java.sql.*;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Scanner;
 
 public class DBMSboundary {
     private static DBMSboundary instance;
-    private static final String URL = "jdbc:mysql://localhost:3306/shareroomafam";
-    private static final String USER = "root";
-    private static final String PASSWORD = "password";
+    private static final String URL = "jdbc:sqlite:database.db";
     private Connection connection;
 
     private DBMSboundary() {
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            this.connection = DriverManager.getConnection(URL, USER, PASSWORD);
+            Class.forName("org.sqlite.JDBC");
+            this.connection = DriverManager.getConnection(URL);
+            initializeDatabase();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void initializeDatabase() {
+        try {
+            Statement stmt = this.connection.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT name FROM sqlite_master WHERE type='table' AND name='ARTISTA'");
+            if (!rs.next()) {
+                System.out.println("Tabelle non trovate, inizializzazione del database...");
+                executeSqlScript("/sql/schema.sql");
+                executeSqlScript("/sql/populate.sql");
+            }
+            rs.close();
+            stmt.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void executeSqlScript(String path) {
+        try (InputStream is = getClass().getResourceAsStream(path)) {
+            if (is == null) {
+                System.out.println("Script non trovato: " + path);
+                return;
+            }
+            try (Scanner scanner = new Scanner(is, StandardCharsets.UTF_8.name())) {
+                scanner.useDelimiter(";");
+                Statement stmt = this.connection.createStatement();
+                while (scanner.hasNext()) {
+                    String query = scanner.next().trim();
+                    if (!query.isEmpty()) {
+                        stmt.execute(query);
+                    }
+                }
+                stmt.close();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -28,7 +68,7 @@ public class DBMSboundary {
     private Connection getConnection() {
         try {
             if (this.connection == null || this.connection.isClosed()) {
-                this.connection = DriverManager.getConnection(URL, USER, PASSWORD);
+                this.connection = DriverManager.getConnection(URL);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -529,7 +569,7 @@ public class DBMSboundary {
 
     public void insertDBMSVisualizzazione(int idStanza, int idVisualizzatore) {
         try {
-            String query = "INSERT INTO VISUALIZZAZIONE (idVisualizzatore, idStanza, dataVisualizzazione) VALUES (?, ?, NOW())";
+            String query = "INSERT INTO VISUALIZZAZIONE (idVisualizzatore, idStanza, dataVisualizzazione) VALUES (?, ?, DATETIME('now'))";
             PreparedStatement ps = getConnection().prepareStatement(query);
             ps.setInt(1, idVisualizzatore);
             ps.setInt(2, idStanza);

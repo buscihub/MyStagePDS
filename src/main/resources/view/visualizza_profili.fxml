@@ -21,11 +21,11 @@
             <Label text="Cerca altri professionisti" styleClass="title-label"/>
             
             <HBox spacing="10" alignment="CENTER">
-                <TextField promptText="Cerca per nome o professione..." styleClass="input-field" prefWidth="300"/>
+                <TextField fx:id="searchField" promptText="Cerca per nome o professione..." styleClass="input-field" prefWidth="300"/>
                 <Button text="Cerca" onAction="#cercaProfili" styleClass="primary-button"/>
             </HBox>
             
-            <ListView fx:id="profiliList" prefHeight="300" prefWidth="500" />
+            <ListView fx:id="profiliList" prefHeight="300" prefWidth="500" onMouseClicked="#onProfiloClicked" />
         </VBox>
     </center>
 </BorderPane>
