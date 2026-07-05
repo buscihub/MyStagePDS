@@ -25,4 +25,12 @@
     </HBox>
     <Button text="Hai dimenticato la password? Recuperala" onAction="#handleRecuperaPassword" styleClass="link-button"/>
     <Button text="Non hai un account? Registrati" onAction="#goToRegistrazione" styleClass="link-button"/>
+
+    <Separator />
+    
+    <Label text="Sei uno Scouter?" style="-fx-font-weight: bold;"/>
+    <HBox spacing="10" alignment="CENTER" maxWidth="400">
+        <TextField fx:id="linkStanzaField" promptText="Es. shareroom.com/1234abcd" HBox.hgrow="ALWAYS" styleClass="input-field"/>
+        <Button text="Vai alla Stanza" onAction="#handleGuestLogin" styleClass="secondary-button"/>
+    </HBox>
 </VBox>

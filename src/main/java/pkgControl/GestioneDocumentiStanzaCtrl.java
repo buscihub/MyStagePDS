@@ -7,7 +7,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.HBox;
 import pkgBoundary.DBMSboundary;
 import pkgEntity.DocumentoEntity;
 import pkgEntity.DocumentoStanzaDto;

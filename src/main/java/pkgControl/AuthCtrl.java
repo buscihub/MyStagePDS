@@ -159,4 +159,38 @@ public class AuthCtrl {
             alert.showAndWait();
         }
     }
+
+    @FXML
+    private TextField linkStanzaField;
+
+    @FXML
+    public void handleGuestLogin(ActionEvent event) {
+        if (linkStanzaField == null) return;
+        String link = linkStanzaField.getText();
+        if (link == null || link.trim().isEmpty()) {
+            javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.ERROR);
+            alert.setTitle("Errore");
+            alert.setHeaderText(null);
+            alert.setContentText("Inserisci un link valido.");
+            alert.showAndWait();
+            return;
+        }
+
+        try {
+            java.sql.ResultSet rs = pkgBoundary.DBMSboundary.getInstance().queryDBMSStanzaByLink(link);
+            if (rs != null && rs.next()) {
+                int idStanza = rs.getInt("idStanza");
+                pkgUtility.UserSession.getInstance().setStanzaSelezionata(idStanza);
+                Router.getInstance().navigate("vista_scouter.fxml", "ShareRoomAfam - Vista Stanza");
+            } else {
+                javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.ERROR);
+                alert.setTitle("Errore");
+                alert.setHeaderText(null);
+                alert.setContentText("Nessuna stanza trovata con questo link.");
+                alert.showAndWait();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

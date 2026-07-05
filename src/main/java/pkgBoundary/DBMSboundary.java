@@ -433,6 +433,18 @@ public class DBMSboundary {
         }
     }
 
+    public ResultSet queryDBMSStanzaByLink(String link) {
+        try {
+            String query = "SELECT * FROM STANZA WHERE link = ?";
+            PreparedStatement ps = getConnection().prepareStatement(query);
+            ps.setString(1, link);
+            return ps.executeQuery();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public void insertDocumentiDBMSStanza(int idStanza, int idDocumento, boolean scaricabile) {
         try {
             String query = "INSERT INTO CONTIENE (idStanza, idDocumento, scaricabile) VALUES (?, ?, ?)";
