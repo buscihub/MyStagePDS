@@ -34,7 +34,18 @@
             </HBox>
             
             <Label text="Carica un nuovo documento" style="-fx-font-weight: bold; -fx-padding: 20px 0 0 0;"/>
-            <Button text="Seleziona File..." onAction="#selezionaFile" styleClass="primary-button"/>
+            <HBox spacing="10" alignment="CENTER">
+                <Button text="Seleziona File..." onAction="#selezionaFile" styleClass="primary-button"/>
+            </HBox>
+            
+            <Label text="I Miei Documenti" style="-fx-font-weight: bold; -fx-padding: 20px 0 0 0;"/>
+            <TableView fx:id="documentiTable" prefHeight="250" prefWidth="500">
+                <columns>
+                    <TableColumn fx:id="percorsoCol" text="Percorso" prefWidth="250"/>
+                    <TableColumn fx:id="visibileCol" text="Pubblico" prefWidth="100"/>
+                    <TableColumn fx:id="azioneCol" text="Azione" prefWidth="100"/>
+                </columns>
+            </TableView>
         </VBox>
     </center>
 </BorderPane>
