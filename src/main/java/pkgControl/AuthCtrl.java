@@ -180,8 +180,70 @@ public class AuthCtrl {
             java.sql.ResultSet rs = pkgBoundary.DBMSboundary.getInstance().queryDBMSStanzaByLink(link);
             if (rs != null && rs.next()) {
                 int idStanza = rs.getInt("idStanza");
-                pkgUtility.UserSession.getInstance().setStanzaSelezionata(idStanza);
-                Router.getInstance().navigate("vista_scouter.fxml", "ShareRoomAfam - Vista Stanza");
+                
+                // Richiedi i dati allo Scouter
+                javafx.scene.control.Dialog<javafx.util.Pair<String, String>> dialog = new javafx.scene.control.Dialog<>();
+                dialog.setTitle("Dati Ospite");
+                dialog.setHeaderText("Inserisci i tuoi dati per accedere alla stanza");
+
+                javafx.scene.control.ButtonType loginButtonType = new javafx.scene.control.ButtonType("Entra", javafx.scene.control.ButtonBar.ButtonData.OK_DONE);
+                dialog.getDialogPane().getButtonTypes().addAll(loginButtonType, javafx.scene.control.ButtonType.CANCEL);
+
+                javafx.scene.layout.GridPane grid = new javafx.scene.layout.GridPane();
+                grid.setHgap(10);
+                grid.setVgap(10);
+                
+                TextField nomeGuest = new TextField();
+                nomeGuest.setPromptText("Nome");
+                TextField cognomeGuest = new TextField();
+                cognomeGuest.setPromptText("Cognome");
+                TextField emailGuest = new TextField();
+                emailGuest.setPromptText("Email");
+
+                grid.add(new javafx.scene.control.Label("Nome:"), 0, 0);
+                grid.add(nomeGuest, 1, 0);
+                grid.add(new javafx.scene.control.Label("Cognome:"), 0, 1);
+                grid.add(cognomeGuest, 1, 1);
+                grid.add(new javafx.scene.control.Label("Email:"), 0, 2);
+                grid.add(emailGuest, 1, 2);
+
+                dialog.getDialogPane().setContent(grid);
+
+                dialog.setResultConverter(dialogButton -> {
+                    if (dialogButton == loginButtonType) {
+                        return new javafx.util.Pair<>(nomeGuest.getText(), emailGuest.getText());
+                    }
+                    return null;
+                });
+
+                java.util.Optional<javafx.util.Pair<String, String>> result = dialog.showAndWait();
+
+                result.ifPresent(dati -> {
+                    String nome = dati.getKey();
+                    String email = dati.getValue();
+                    String cognome = cognomeGuest.getText();
+
+                    if (!nome.isEmpty() && !email.isEmpty()) {
+                        try {
+                            java.sql.ResultSet rsVis = pkgBoundary.DBMSboundary.getInstance().insertDBMSVisualizzatore(nome, cognome, email);
+                            if (rsVis != null && rsVis.next()) {
+                                int idVisualizzatore = rsVis.getInt(1);
+                                pkgBoundary.DBMSboundary.getInstance().insertDBMSVisualizzazione(idStanza, idVisualizzatore);
+                            }
+                            
+                            pkgUtility.UserSession.getInstance().setStanzaSelezionata(idStanza);
+                            Router.getInstance().navigate("vista_scouter.fxml", "ShareRoomAfam - Vista Stanza");
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        javafx.scene.control.Alert alertInfo = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.WARNING);
+                        alertInfo.setTitle("Dati incompleti");
+                        alertInfo.setHeaderText(null);
+                        alertInfo.setContentText("Devi inserire Nome e Email per accedere.");
+                        alertInfo.showAndWait();
+                    }
+                });
             } else {
                 javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.ERROR);
                 alert.setTitle("Errore");

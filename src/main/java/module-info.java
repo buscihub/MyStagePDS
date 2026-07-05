@@ -5,6 +5,7 @@ module shareroomafam {
     requires javafx.fxml;
     requires jakarta.mail;
     requires jdk.httpserver;
+    requires java.desktop;
 
     exports pkgEntity;
     exports pkgBoundary;

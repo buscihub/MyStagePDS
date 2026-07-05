@@ -106,19 +106,53 @@ public class VistaScouterCtrl implements Initializable {
     }
 
     private void visualizzaDocumento(DocumentoStanzaDto doc) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Visualizzazione");
-        alert.setHeaderText("Apertura documento in corso...");
-        alert.setContentText("Stai visualizzando il file: " + doc.getPercorso());
-        alert.showAndWait();
+        try {
+            java.io.File file = new java.io.File(doc.getPercorso());
+            if (file.exists()) {
+                if (java.awt.Desktop.isDesktopSupported()) {
+                    java.awt.Desktop.getDesktop().open(file);
+                } else {
+                    Alert alert = new Alert(Alert.AlertType.WARNING, "Il sistema non supporta l'apertura automatica dei file.");
+                    alert.showAndWait();
+                }
+            } else {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "File non trovato nel percorso: " + doc.getPercorso());
+                alert.showAndWait();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Impossibile aprire il file.");
+            alert.showAndWait();
+        }
     }
 
     private void scaricaDocumento(DocumentoStanzaDto doc) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Download");
-        alert.setHeaderText("Download completato!");
-        alert.setContentText("Il file " + doc.getPercorso() + " è stato salvato sul tuo computer.");
-        alert.showAndWait();
+        try {
+            java.io.File sourceFile = new java.io.File(doc.getPercorso());
+            if (!sourceFile.exists()) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "File sorgente non trovato.");
+                alert.showAndWait();
+                return;
+            }
+
+            javafx.stage.FileChooser fileChooser = new javafx.stage.FileChooser();
+            fileChooser.setTitle("Salva Documento");
+            fileChooser.setInitialFileName(sourceFile.getName());
+            
+            // Per ottenere la Window corrente, usiamo la tabella come riferimento
+            javafx.stage.Window window = documentiTable.getScene().getWindow();
+            java.io.File destFile = fileChooser.showSaveDialog(window);
+
+            if (destFile != null) {
+                java.nio.file.Files.copy(sourceFile.toPath(), destFile.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                Alert alert = new Alert(Alert.AlertType.INFORMATION, "Download completato con successo in:\n" + destFile.getAbsolutePath());
+                alert.showAndWait();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Errore durante il download del file.");
+            alert.showAndWait();
+        }
     }
 
     @FXML

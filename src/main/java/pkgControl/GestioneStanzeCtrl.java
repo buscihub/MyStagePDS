@@ -40,18 +40,25 @@ public class GestioneStanzeCtrl implements Initializable {
     private void setupAzioniColumn() {
         colAzioni.setCellFactory(param -> new TableCell<>() {
             private final Button btnGestisci = new Button("Gestisci");
+            private final Button btnStatistiche = new Button("Statistiche");
             private final Button btnElimina = new Button("Elimina");
-            private final HBox pane = new HBox(5, btnGestisci, btnElimina);
+            private final HBox pane = new HBox(5, btnGestisci, btnStatistiche, btnElimina);
 
             {
                 btnGestisci.setOnAction(event -> {
                     StanzaEntity stanza = getTableView().getItems().get(getIndex());
                     gestisciStanza(stanza);
                 });
+                btnStatistiche.setOnAction(event -> {
+                    StanzaEntity stanza = getTableView().getItems().get(getIndex());
+                    vediStatistiche(stanza);
+                });
                 btnElimina.setOnAction(event -> {
                     StanzaEntity stanza = getTableView().getItems().get(getIndex());
                     eliminaStanza(stanza);
                 });
+                
+                btnStatistiche.setStyle("-fx-background-color: #ffc107; -fx-text-fill: black;");
             }
 
             @Override
@@ -60,6 +67,11 @@ public class GestioneStanzeCtrl implements Initializable {
                 setGraphic(empty ? null : pane);
             }
         });
+    }
+
+    private void vediStatistiche(StanzaEntity stanza) {
+        UserSession.getInstance().setStanzaSelezionata(stanza.getIdStanza());
+        Router.getInstance().navigate("statistiche_stanza.fxml", "ShareRoomAfam - Statistiche Stanza");
     }
 
     private void caricaStanze() {
