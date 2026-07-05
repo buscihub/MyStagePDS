@@ -102,7 +102,7 @@ public class AuthCtrl {
         try {
             java.sql.ResultSet rs = pkgBoundary.DBMSboundary.getInstance().queryDBMSVerificaRegistrazione(cf, email);
             if (rs != null && rs.next()) {
-                new textmessage.ErrorText("Account già esistente con questo CF o Email.").okay();
+                new pkgBoundary.ErrorText("Account già esistente con questo CF o Email.").okay();
                 return;
             }
 
@@ -119,16 +119,16 @@ public class AuthCtrl {
                 if (otpResult.isPresent() && otpResult.get().equals(otp)) {
                     int res = pkgBoundary.DBMSboundary.getInstance().insertDBMSCreaProfilo(nome, cognome, dataNascita, sesso, cf, nomeDarte, email, password);
                     if (res > 0) {
-                        new textmessage.SuccessfulText("Registrazione effettuata con successo!").okay();
+                        new pkgBoundary.SuccessfulText("Registrazione effettuata con successo!").okay();
                         Router.getInstance().navigate("login.fxml", "ShareRoomAfam - Login");
                     } else {
-                        new textmessage.ErrorText("Errore durante la registrazione nel database.").okay();
+                        new pkgBoundary.ErrorText("Errore durante la registrazione nel database.").okay();
                     }
                 } else {
-                    new textmessage.ErrorText("Codice OTP errato. Registrazione annullata.").okay();
+                    new pkgBoundary.ErrorText("Codice OTP errato. Registrazione annullata.").okay();
                 }
             } else {
-                new textmessage.ErrorText("Errore durante l'invio dell'email per l'OTP.").okay();
+                new pkgBoundary.ErrorText("Errore durante l'invio dell'email per l'OTP.").okay();
             }
 
         } catch (Exception e) {
@@ -184,16 +184,16 @@ public class AuthCtrl {
                             if (pwdResult.isPresent() && !pwdResult.get().isEmpty()) {
                                 String cf = rs.getString("codiceFiscale");
                                 pkgBoundary.DBMSboundary.getInstance().updateDBMSPassword(cf, pwdResult.get());
-                                new textmessage.SuccessfulText("Password aggiornata con successo!").okay();
+                                new pkgBoundary.SuccessfulText("Password aggiornata con successo!").okay();
                             }
                         } else {
-                            new textmessage.ErrorText("Codice OTP errato.").okay();
+                            new pkgBoundary.ErrorText("Codice OTP errato.").okay();
                         }
                     } else {
-                        new textmessage.ErrorText("Errore durante l'invio dell'email.").okay();
+                        new pkgBoundary.ErrorText("Errore durante l'invio dell'email.").okay();
                     }
                 } else {
-                    new textmessage.ErrorText("Email non trovata nel sistema.").okay();
+                    new pkgBoundary.ErrorText("Email non trovata nel sistema.").okay();
                 }
             } catch (Exception e) {
                 e.printStackTrace();

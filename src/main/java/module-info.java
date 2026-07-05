@@ -9,7 +9,6 @@ module shareroomafam {
 
     exports pkgEntity;
     exports pkgBoundary;
-    exports textmessage;
     exports pkgUtility;
     exports pkgServer;
     exports pkgMain;

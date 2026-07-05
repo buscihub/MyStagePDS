@@ -1,4 +1,4 @@
-package textmessage;
+package pkgBoundary;
 
 import javafx.scene.control.Alert;
 

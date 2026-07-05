@@ -40,7 +40,7 @@ public class VisualizzaProfiliCtrl {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            new textmessage.ErrorText("Errore durante la ricerca").okay();
+            new pkgBoundary.ErrorText("Errore durante la ricerca").okay();
         }
     }
 
@@ -82,7 +82,7 @@ public class VisualizzaProfiliCtrl {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            new textmessage.ErrorText("Errore durante il filtraggio").okay();
+            new pkgBoundary.ErrorText("Errore durante il filtraggio").okay();
         }
     }
 

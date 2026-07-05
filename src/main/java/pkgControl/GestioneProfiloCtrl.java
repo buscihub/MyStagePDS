@@ -235,7 +235,7 @@ public class GestioneProfiloCtrl {
                 
                 loadProfilo();
                 
-                new textmessage.SuccessfulText("Immagine profilo aggiornata!").okay();
+                new pkgBoundary.SuccessfulText("Immagine profilo aggiornata!").okay();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -248,7 +248,7 @@ public class GestioneProfiloCtrl {
             pkgBoundary.DBMSboundary.getInstance().updateDBMSDefaultImmagineProfilo(getUtenteCorrente());
             avatarImageView.setImage(null);
             loadProfilo();
-            new textmessage.SuccessfulText("Immagine profilo rimossa!").okay();
+            new pkgBoundary.SuccessfulText("Immagine profilo rimossa!").okay();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -258,16 +258,16 @@ public class GestioneProfiloCtrl {
     public void cambiaNomeArte(ActionEvent event) {
         String nuovoNome = nuovoNomeArteField.getText();
         if (nuovoNome == null || nuovoNome.trim().isEmpty()) {
-            new textmessage.ErrorText("Inserisci un nome d'arte valido.").okay();
+            new pkgBoundary.ErrorText("Inserisci un nome d'arte valido.").okay();
             return;
         }
         try {
             boolean giaInUso = pkgBoundary.DBMSboundary.getInstance().queryDBMSVerificaNomeArte(nuovoNome.trim());
             if (giaInUso) {
-                new textmessage.ErrorText("Nome d'arte non disponibile.").okay();
+                new pkgBoundary.ErrorText("Nome d'arte non disponibile.").okay();
             } else {
                 pkgBoundary.DBMSboundary.getInstance().updateDBMSNomeArte(getUtenteCorrente(), nuovoNome.trim());
-                new textmessage.SuccessfulText("Nome d'arte aggiornato con successo!").okay();
+                new pkgBoundary.SuccessfulText("Nome d'arte aggiornato con successo!").okay();
                 nuovoNomeArteField.clear();
                 loadProfilo();
             }
@@ -281,20 +281,20 @@ public class GestioneProfiloCtrl {
         String pwd1 = nuovaPasswordField.getText();
         String pwd2 = confermaPasswordField.getText();
         if (pwd1 == null || pwd1.isEmpty() || pwd2 == null || pwd2.isEmpty()) {
-            new textmessage.ErrorText("Inserisci la nuova password in entrambi i campi.").okay();
+            new pkgBoundary.ErrorText("Inserisci la nuova password in entrambi i campi.").okay();
             return;
         }
         if (!pwd1.equals(pwd2)) {
-            new textmessage.ErrorText("Le password non coincidono.").okay();
+            new pkgBoundary.ErrorText("Le password non coincidono.").okay();
             return;
         }
         try {
             boolean pwdInUso = pkgBoundary.DBMSboundary.getInstance().queryDBMSVerificaPassword(getUtenteCorrente(), pwd1);
             if (pwdInUso) {
-                new textmessage.ErrorText("Attenzione: la nuova password deve essere diversa dalla precedente.").okay();
+                new pkgBoundary.ErrorText("Attenzione: la nuova password deve essere diversa dalla precedente.").okay();
             } else {
                 pkgBoundary.DBMSboundary.getInstance().updateDBMSPassword(getUtenteCorrente(), pwd1);
-                new textmessage.SuccessfulText("Password aggiornata con successo!").okay();
+                new pkgBoundary.SuccessfulText("Password aggiornata con successo!").okay();
                 nuovaPasswordField.clear();
                 confermaPasswordField.clear();
             }
@@ -308,18 +308,18 @@ public class GestioneProfiloCtrl {
         String tipo = nuovaCarrieraField.getText();
         String anniStr = anniCarrieraField.getText();
         if (tipo == null || tipo.trim().isEmpty() || anniStr == null || anniStr.trim().isEmpty()) {
-            new textmessage.ErrorText("Inserisci tipologia e anni di carriera.").okay();
+            new pkgBoundary.ErrorText("Inserisci tipologia e anni di carriera.").okay();
             return;
         }
         try {
             int anni = Integer.parseInt(anniStr.trim());
             pkgBoundary.DBMSboundary.getInstance().insertDBMSCarriera(getUtenteCorrente(), tipo.trim(), anni);
-            new textmessage.SuccessfulText("Carriera aggiunta!").okay();
+            new pkgBoundary.SuccessfulText("Carriera aggiunta!").okay();
             nuovaCarrieraField.clear();
             anniCarrieraField.clear();
             loadCarriere();
         } catch (NumberFormatException e) {
-            new textmessage.ErrorText("Gli anni devono essere un numero intero.").okay();
+            new pkgBoundary.ErrorText("Gli anni devono essere un numero intero.").okay();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -336,7 +336,7 @@ public class GestioneProfiloCtrl {
         if (result.isPresent() && result.get() == javafx.scene.control.ButtonType.OK) {
             try {
                 pkgBoundary.DBMSboundary.getInstance().removeDBMSProfiloArtista(getUtenteCorrente());
-                new textmessage.SuccessfulText("Profilo cancellato con successo.").okay();
+                new pkgBoundary.SuccessfulText("Profilo cancellato con successo.").okay();
                 doLogout(event);
             } catch (Exception e) {
                 e.printStackTrace();
