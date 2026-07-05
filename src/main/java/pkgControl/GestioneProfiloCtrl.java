@@ -6,7 +6,9 @@ import pkgUtility.Router;
 
 public class GestioneProfiloCtrl {
 
-    private final String UTENTE_ATTIVO_MOCK = "RSSMRA80A01H501U";
+    private String getUtenteCorrente() {
+        return pkgUtility.UserSession.getInstance().getUtenteLoggato();
+    }
 
     @FXML
     private javafx.scene.control.TableView<pkgEntity.DocumentoEntity> documentiTable;
@@ -66,7 +68,7 @@ public class GestioneProfiloCtrl {
     private void loadDocumenti() {
         try {
             documentiTable.getItems().clear();
-            java.sql.ResultSet rs = pkgBoundary.DBMSboundary.getInstance().queryDBMSListaDocumenti(UTENTE_ATTIVO_MOCK);
+            java.sql.ResultSet rs = pkgBoundary.DBMSboundary.getInstance().queryDBMSListaDocumenti(getUtenteCorrente());
             while (rs != null && rs.next()) {
                 pkgEntity.DocumentoEntity doc = new pkgEntity.DocumentoEntity(
                     rs.getInt("idDocumento"),
@@ -93,6 +95,7 @@ public class GestioneProfiloCtrl {
 
     @FXML
     public void doLogout(ActionEvent event) {
+        pkgUtility.UserSession.getInstance().logout();
         Router.getInstance().navigate("login.fxml", "ShareRoomAfam - Login");
     }
 
@@ -110,7 +113,7 @@ public class GestioneProfiloCtrl {
                 java.nio.file.Files.copy(file.toPath(), destFile.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
                 
                 String path = "src/main/resources/images/" + file.getName();
-                pkgBoundary.DBMSboundary.getInstance().queryDBMSInsertDocumenti(UTENTE_ATTIVO_MOCK, true, path);
+                pkgBoundary.DBMSboundary.getInstance().queryDBMSInsertDocumenti(getUtenteCorrente(), true, path);
                 
                 loadDocumenti();
                 

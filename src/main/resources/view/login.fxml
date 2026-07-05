@@ -19,6 +19,10 @@
         <PasswordField fx:id="passwordField" promptText="Inserisci la tua password" styleClass="input-field"/>
     </VBox>
 
-    <Button text="Accedi" onAction="#handleLogin" styleClass="primary-button"/>
+    <HBox spacing="10" alignment="CENTER">
+        <Button text="Accedi" onAction="#handleLogin" styleClass="primary-button"/>
+        <Button text="Entra con SPID" onAction="#handleSPID" style="-fx-background-color: #005A9C; -fx-text-fill: white;"/>
+    </HBox>
+    <Button text="Hai dimenticato la password? Recuperala" onAction="#handleRecuperaPassword" styleClass="link-button"/>
     <Button text="Non hai un account? Registrati" onAction="#goToRegistrazione" styleClass="link-button"/>
 </VBox>

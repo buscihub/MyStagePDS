@@ -12,8 +12,12 @@
     <Label text="Registrazione Artista" styleClass="title-label"/>
     
     <VBox spacing="10.0" maxWidth="300">
-        <TextField promptText="Nome" styleClass="input-field"/>
-        <TextField promptText="Cognome" styleClass="input-field"/>
+        <TextField fx:id="nomeField" promptText="Nome" styleClass="input-field"/>
+        <TextField fx:id="cognomeField" promptText="Cognome" styleClass="input-field"/>
+        <DatePicker fx:id="dataNascitaField" promptText="Data di Nascita" styleClass="input-field" prefWidth="300"/>
+        <ComboBox fx:id="sessoField" promptText="Sesso" styleClass="input-field" prefWidth="300"/>
+        <TextField fx:id="codiceFiscaleField" promptText="Codice Fiscale" styleClass="input-field"/>
+        <TextField fx:id="nomeDarteField" promptText="Nome d'Arte" styleClass="input-field"/>
         <TextField fx:id="emailField" promptText="Email" styleClass="input-field"/>
         <PasswordField fx:id="passwordField" promptText="Password" styleClass="input-field"/>
     </VBox>
