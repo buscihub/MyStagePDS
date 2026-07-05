@@ -27,8 +27,11 @@ public class GestioneProfiloCtrl {
         fileChooser.setTitle("Seleziona File da Caricare");
         java.io.File file = fileChooser.showOpenDialog(null);
         if (file != null) {
-            textmessage.ErrorText msg = new textmessage.ErrorText("File selezionato: " + file.getName());
-            msg.okay();
+            javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
+            alert.setTitle("File Selezionato");
+            alert.setHeaderText(null);
+            alert.setContentText("File selezionato: " + file.getName());
+            alert.showAndWait();
         }
     }
 }

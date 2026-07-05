@@ -51,7 +51,11 @@ public class AuthCtrl {
             return;
         }
 
-        new ErrorText("Registrazione effettuata con successo!").okay();
+        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
+        alert.setTitle("Successo");
+        alert.setHeaderText(null);
+        alert.setContentText("Registrazione effettuata con successo!");
+        alert.showAndWait();
         Router.getInstance().navigate("login.fxml", "ShareRoomAfam - Login");
     }
 }

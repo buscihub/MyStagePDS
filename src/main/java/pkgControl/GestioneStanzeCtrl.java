@@ -14,6 +14,10 @@ public class GestioneStanzeCtrl {
     @FXML
     public void creaNuovaStanza(ActionEvent event) {
         // Logica mock per creare una stanza
-        new textmessage.ErrorText("Stanza creata con successo!").okay();
+        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
+        alert.setTitle("Successo");
+        alert.setHeaderText(null);
+        alert.setContentText("Stanza creata con successo!");
+        alert.showAndWait();
     }
 }
