@@ -154,6 +154,7 @@ public class DBMSboundary {
             ps.setString(9, "default.png");
             return ps.executeUpdate();
         } catch (SQLException e) {
+            salvaDatiEmergenza("Creazione Profilo", codiceFiscale + "," + email);
             e.printStackTrace();
             return 0;
         }
@@ -361,6 +362,7 @@ public class DBMSboundary {
             ps.executeUpdate();
             return ps.getGeneratedKeys();
         } catch (SQLException e) {
+            salvaDatiEmergenza("Inserimento Documento", codiceFiscale + "," + percorso);
             e.printStackTrace();
             return null;
         }
@@ -428,6 +430,7 @@ public class DBMSboundary {
             ps.executeUpdate();
             return ps.getGeneratedKeys();
         } catch (SQLException e) {
+            salvaDatiEmergenza("Creazione Stanza", codiceFiscale + "," + nomeStanza);
             e.printStackTrace();
             return null;
         }
@@ -454,6 +457,7 @@ public class DBMSboundary {
             ps.setBoolean(3, scaricabile);
             ps.executeUpdate();
         } catch (SQLException e) {
+            salvaDatiEmergenza("Associazione Documento a Stanza", idStanza + "," + idDocumento);
             e.printStackTrace();
         }
     }
@@ -611,6 +615,18 @@ public class DBMSboundary {
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void salvaDatiEmergenza(String operazione, String dati) {
+        try {
+            java.io.File file = new java.io.File("emergenza_cache.txt");
+            java.io.FileWriter fw = new java.io.FileWriter(file, true);
+            fw.write(java.time.LocalDateTime.now() + " - " + operazione + ": " + dati + "\n");
+            fw.close();
+            System.err.println("Errore DBMS. Dati salvati in emergenza in " + file.getAbsolutePath());
+        } catch (java.io.IOException ioException) {
+            ioException.printStackTrace();
         }
     }
 }

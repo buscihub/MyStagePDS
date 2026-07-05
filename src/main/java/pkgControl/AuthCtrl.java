@@ -102,29 +102,35 @@ public class AuthCtrl {
         try {
             java.sql.ResultSet rs = pkgBoundary.DBMSboundary.getInstance().queryDBMSVerificaRegistrazione(cf, email);
             if (rs != null && rs.next()) {
-                javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.ERROR);
-                alert.setTitle("Errore");
-                alert.setHeaderText(null);
-                alert.setContentText("Account già esistente con questo CF o Email.");
-                alert.showAndWait();
+                new textmessage.ErrorText("Account già esistente con questo CF o Email.").okay();
                 return;
             }
 
-            int res = pkgBoundary.DBMSboundary.getInstance().insertDBMSCreaProfilo(nome, cognome, dataNascita, sesso, cf, nomeDarte, email, password);
-            if (res > 0) {
-                javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
-                alert.setTitle("Successo");
-                alert.setHeaderText(null);
-                alert.setContentText("Registrazione effettuata con successo!");
-                alert.showAndWait();
-                Router.getInstance().navigate("login.fxml", "ShareRoomAfam - Login");
+            // Generate OTP for registration
+            String otp = String.format("%06d", new java.util.Random().nextInt(999999));
+            boolean sent = pkgUtility.EmailSender.inviaCodice2FA(email, otp);
+            if (sent) {
+                javafx.scene.control.TextInputDialog otpDialog = new javafx.scene.control.TextInputDialog();
+                otpDialog.setTitle("Verifica OTP");
+                otpDialog.setHeaderText("Abbiamo inviato un codice a " + email);
+                otpDialog.setContentText("Codice OTP:");
+                
+                java.util.Optional<String> otpResult = otpDialog.showAndWait();
+                if (otpResult.isPresent() && otpResult.get().equals(otp)) {
+                    int res = pkgBoundary.DBMSboundary.getInstance().insertDBMSCreaProfilo(nome, cognome, dataNascita, sesso, cf, nomeDarte, email, password);
+                    if (res > 0) {
+                        new textmessage.SuccessfulText("Registrazione effettuata con successo!").okay();
+                        Router.getInstance().navigate("login.fxml", "ShareRoomAfam - Login");
+                    } else {
+                        new textmessage.ErrorText("Errore durante la registrazione nel database.").okay();
+                    }
+                } else {
+                    new textmessage.ErrorText("Codice OTP errato. Registrazione annullata.").okay();
+                }
             } else {
-                javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.ERROR);
-                alert.setTitle("Errore");
-                alert.setHeaderText(null);
-                alert.setContentText("Errore durante la registrazione.");
-                alert.showAndWait();
+                new textmessage.ErrorText("Errore durante l'invio dell'email per l'OTP.").okay();
             }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -152,11 +158,46 @@ public class AuthCtrl {
 
         java.util.Optional<String> result = dialog.showAndWait();
         if (result.isPresent()){
-            javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
-            alert.setTitle("OTP Inviato");
-            alert.setHeaderText(null);
-            alert.setContentText("Un codice OTP è stato inviato a " + result.get() + ".");
-            alert.showAndWait();
+            String email = result.get();
+            try {
+                java.sql.ResultSet rs = pkgBoundary.DBMSboundary.getInstance().queryDBMSVerificaEmail(email);
+                if (rs != null && rs.next()) {
+                    // Generate OTP
+                    String otp = String.format("%06d", new java.util.Random().nextInt(999999));
+                    pkgBoundary.DBMSboundary.getInstance().insertDBMScodice(email, otp);
+                    
+                    boolean sent = pkgUtility.EmailSender.inviaCodice2FA(email, otp);
+                    if (sent) {
+                        javafx.scene.control.TextInputDialog otpDialog = new javafx.scene.control.TextInputDialog();
+                        otpDialog.setTitle("Verifica OTP");
+                        otpDialog.setHeaderText("Abbiamo inviato un codice a " + email);
+                        otpDialog.setContentText("Codice OTP:");
+                        
+                        java.util.Optional<String> otpResult = otpDialog.showAndWait();
+                        if (otpResult.isPresent() && otpResult.get().equals(otp)) {
+                            javafx.scene.control.TextInputDialog newPwdDialog = new javafx.scene.control.TextInputDialog();
+                            newPwdDialog.setTitle("Nuova Password");
+                            newPwdDialog.setHeaderText("Inserisci la nuova password");
+                            newPwdDialog.setContentText("Password:");
+                            
+                            java.util.Optional<String> pwdResult = newPwdDialog.showAndWait();
+                            if (pwdResult.isPresent() && !pwdResult.get().isEmpty()) {
+                                String cf = rs.getString("codiceFiscale");
+                                pkgBoundary.DBMSboundary.getInstance().updateDBMSPassword(cf, pwdResult.get());
+                                new textmessage.SuccessfulText("Password aggiornata con successo!").okay();
+                            }
+                        } else {
+                            new textmessage.ErrorText("Codice OTP errato.").okay();
+                        }
+                    } else {
+                        new textmessage.ErrorText("Errore durante l'invio dell'email.").okay();
+                    }
+                } else {
+                    new textmessage.ErrorText("Email non trovata nel sistema.").okay();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 

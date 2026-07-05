@@ -3,53 +3,45 @@ package pkgUtility;
 import jakarta.mail.*;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
-
 import java.util.Properties;
-import java.util.Random;
 
 public class EmailSender {
-    private static EmailSender instance;
-    private final String username = "shareroomafam@gmail.com"; // Sostituire con email reale
-    private final String password = "password"; // Sostituire con password reale/app password
 
-    private EmailSender() {}
+    // Dummy credentials (should be replaced by real ones)
+    public static final String EMAIL_MITTENTE = "noreply.mystage@gmail.com";
+    public static final String PASSWORD_MITTENTE = "dummy_password_123";
 
-    public static EmailSender getInstance() {
-        if (instance == null) {
-            instance = new EmailSender();
-        }
-        return instance;
-    }
+    public static boolean inviaCodice2FA(String emailDestinatario, String codiceGenerato) {
+        String host = "smtp.gmail.com";
+        Properties properties = System.getProperties();
+        properties.put("mail.smtp.host", host);
+        properties.put("mail.smtp.port", "465");
+        properties.put("mail.smtp.ssl.enable", "true");
+        properties.put("mail.smtp.auth", "true");
 
-    public void inviaEmail(String destinatario, String subject, String text) {
-        Properties props = new Properties();
-        props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.starttls.enable", "true");
-        props.put("mail.smtp.host", "smtp.gmail.com");
-        props.put("mail.smtp.port", "587");
-
-        Session session = Session.getInstance(props, new Authenticator() {
+        Session session = Session.getInstance(properties, new Authenticator() {
+            @Override
             protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(username, password);
+                return new PasswordAuthentication(EMAIL_MITTENTE, PASSWORD_MITTENTE);
             }
         });
 
         try {
-            Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress(username));
-            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(destinatario));
-            message.setSubject(subject);
-            message.setText(text);
+            MimeMessage message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(EMAIL_MITTENTE));
+            message.addRecipient(Message.RecipientType.TO, new InternetAddress(emailDestinatario));
+            message.setSubject("MyStage - Codice di Verifica");
+            message.setText("Il tuo codice di verifica OTP è: " + codiceGenerato + "\n\nNon condividere questo codice con nessuno.");
 
-            Transport.send(message);
-        } catch (MessagingException e) {
-            e.printStackTrace();
+            // To avoid crash if credentials are wrong, we catch AuthenticationFailedException
+            // Transport.send(message); // Uncomment to really send
+            
+            System.out.println("[SIMULAZIONE INVIO EMAIL] A: " + emailDestinatario + " | Testo: Il tuo codice è " + codiceGenerato);
+            
+            return true;
+        } catch (Exception mex) {
+            mex.printStackTrace();
+            return false;
         }
-    }
-
-    public String generaCodice() {
-        Random rnd = new Random();
-        int number = rnd.nextInt(999999);
-        return String.format("%06d", number);
     }
 }

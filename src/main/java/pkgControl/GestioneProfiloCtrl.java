@@ -22,6 +22,8 @@ public class GestioneProfiloCtrl {
     @FXML
     private javafx.scene.control.Label nomeArteLabel;
     @FXML
+    private javafx.scene.image.ImageView avatarImageView;
+    @FXML
     private javafx.scene.control.TextField nuovoNomeArteField;
     @FXML
     private javafx.scene.control.PasswordField nuovaPasswordField;
@@ -115,6 +117,19 @@ public class GestioneProfiloCtrl {
             if (rs != null && rs.next()) {
                 String nomeArte = rs.getString("nomeDarte");
                 nomeArteLabel.setText(nomeArte != null ? nomeArte : "");
+                String urlImmagine = rs.getString("urlImmagineProfilo");
+                if (urlImmagine != null && !urlImmagine.isEmpty()) {
+                    try {
+                        java.io.File file = new java.io.File(urlImmagine);
+                        if (file.exists()) {
+                            avatarImageView.setImage(new javafx.scene.image.Image(file.toURI().toString()));
+                        } else {
+                            // If it's just "default.png", load from resources if needed, or leave blank
+                        }
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -199,6 +214,43 @@ public class GestioneProfiloCtrl {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    @FXML
+    public void caricaAvatar(ActionEvent event) {
+        javafx.stage.FileChooser fileChooser = new javafx.stage.FileChooser();
+        fileChooser.setTitle("Seleziona Immagine Profilo");
+        fileChooser.getExtensionFilters().add(new javafx.stage.FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg"));
+        java.io.File file = fileChooser.showOpenDialog(null);
+        if (file != null) {
+            try {
+                java.io.File destDir = new java.io.File("src/main/resources/images");
+                if (!destDir.exists()) destDir.mkdirs();
+                java.io.File destFile = new java.io.File(destDir, "avatar_" + getUtenteCorrente() + "_" + file.getName());
+                java.nio.file.Files.copy(file.toPath(), destFile.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                
+                String path = destFile.getAbsolutePath();
+                pkgBoundary.DBMSboundary.getInstance().queryDBMSUpdateImmagineProfilo(path, getUtenteCorrente());
+                
+                loadProfilo();
+                
+                new textmessage.SuccessfulText("Immagine profilo aggiornata!").okay();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @FXML
+    public void rimuoviAvatar(ActionEvent event) {
+        try {
+            pkgBoundary.DBMSboundary.getInstance().updateDBMSDefaultImmagineProfilo(getUtenteCorrente());
+            avatarImageView.setImage(null);
+            loadProfilo();
+            new textmessage.SuccessfulText("Immagine profilo rimossa!").okay();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

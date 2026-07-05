@@ -53,9 +53,16 @@
                     </padding>
                     
                     <HBox spacing="50" alignment="CENTER">
-                        <!-- Sezione Modifica Nome Arte / Password -->
-                        <VBox spacing="15">
-                            <Label text="Modifica Nome d'Arte" style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
+                        <!-- Sezione Modifica Immagine e Nome Arte / Password -->
+                        <VBox spacing="15" alignment="CENTER">
+                            <Label text="Immagine Profilo" style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
+                            <javafx.scene.image.ImageView fx:id="avatarImageView" fitWidth="100" fitHeight="100" />
+                            <HBox spacing="10" alignment="CENTER">
+                                <Button text="Carica" onAction="#caricaAvatar" styleClass="secondary-button"/>
+                                <Button text="Rimuovi" onAction="#rimuoviAvatar" styleClass="secondary-button"/>
+                            </HBox>
+                            
+                            <Label text="Modifica Nome d'Arte" style="-fx-font-weight: bold; -fx-font-size: 14px; -fx-padding: 10px 0 0 0;"/>
                             <HBox spacing="10">
                                 <TextField fx:id="nuovoNomeArteField" promptText="Nuovo Nome d'Arte" styleClass="input-field"/>
                                 <Button text="Salva" onAction="#cambiaNomeArte" styleClass="secondary-button"/>
