@@ -20,10 +20,18 @@
             </padding>
             <Label text="Cerca altri professionisti" styleClass="title-label"/>
             
-            <HBox spacing="10" alignment="CENTER">
-                <TextField fx:id="searchField" promptText="Cerca per nome o professione..." styleClass="input-field" prefWidth="300"/>
-                <Button text="Cerca" onAction="#cercaProfili" styleClass="primary-button"/>
-            </HBox>
+            <VBox spacing="10" alignment="CENTER">
+                <HBox spacing="10" alignment="CENTER">
+                    <TextField fx:id="searchField" promptText="Cerca per nome o professione..." styleClass="input-field" prefWidth="300"/>
+                    <Button text="Cerca Testuale" onAction="#cercaProfili" styleClass="primary-button"/>
+                </HBox>
+                <HBox spacing="10" alignment="CENTER">
+                    <Label text="Filtri Avanzati:" style="-fx-font-weight: bold;"/>
+                    <TextField fx:id="carrieraFilterField" promptText="Es: Cantante, Strumentista..." styleClass="input-field" prefWidth="200"/>
+                    <TextField fx:id="anniFilterField" promptText="Anni min." styleClass="input-field" prefWidth="100"/>
+                    <Button text="Applica Filtri" onAction="#filtraProfili" styleClass="secondary-button"/>
+                </HBox>
+            </VBox>
             
             <ListView fx:id="profiliList" prefHeight="300" prefWidth="500" onMouseClicked="#onProfiloClicked" />
         </VBox>

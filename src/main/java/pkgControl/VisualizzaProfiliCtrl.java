@@ -13,6 +13,12 @@ public class VisualizzaProfiliCtrl {
     private javafx.scene.control.ListView<String> profiliList;
 
     @FXML
+    private javafx.scene.control.TextField carrieraFilterField;
+
+    @FXML
+    private javafx.scene.control.TextField anniFilterField;
+
+    @FXML
     public void goToProfilo(ActionEvent event) {
         Router.getInstance().navigate("profilo.fxml", "ShareRoomAfam - Profilo");
     }
@@ -35,6 +41,48 @@ public class VisualizzaProfiliCtrl {
         } catch (Exception e) {
             e.printStackTrace();
             new textmessage.ErrorText("Errore durante la ricerca").okay();
+        }
+    }
+
+    @FXML
+    public void filtraProfili(ActionEvent event) {
+        String carriera = carrieraFilterField.getText();
+        String anniStr = anniFilterField.getText();
+        
+        if (carriera == null || carriera.trim().isEmpty() || anniStr == null || anniStr.trim().isEmpty()) {
+            javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.WARNING);
+            alert.setTitle("Attenzione");
+            alert.setHeaderText(null);
+            alert.setContentText("Inserire sia la tipologia di carriera che gli anni minimi di esperienza.");
+            alert.showAndWait();
+            return;
+        }
+
+        int anni = 0;
+        try {
+            anni = Integer.parseInt(anniStr.trim());
+        } catch (NumberFormatException e) {
+            javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.ERROR);
+            alert.setTitle("Errore");
+            alert.setHeaderText(null);
+            alert.setContentText("Gli anni di esperienza devono essere un numero intero.");
+            alert.showAndWait();
+            return;
+        }
+
+        profiliList.getItems().clear();
+        try {
+            java.sql.ResultSet rs = pkgBoundary.DBMSboundary.getInstance().queryDBMSFiltraArtisti(carriera.trim(), anni);
+            while (rs != null && rs.next()) {
+                String cf = rs.getString("codiceFiscale");
+                String nome = rs.getString("nome");
+                String cognome = rs.getString("cognome");
+                String arte = rs.getString("nomeDarte");
+                profiliList.getItems().add(cf + " - " + nome + " " + cognome + " (" + arte + ")");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            new textmessage.ErrorText("Errore durante il filtraggio").okay();
         }
     }
 

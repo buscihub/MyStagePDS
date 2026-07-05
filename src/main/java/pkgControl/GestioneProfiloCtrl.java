@@ -20,6 +20,29 @@ public class GestioneProfiloCtrl {
     private javafx.scene.control.TableColumn<pkgEntity.DocumentoEntity, Void> azioneCol;
 
     @FXML
+    private javafx.scene.control.Label nomeArteLabel;
+    @FXML
+    private javafx.scene.control.TextField nuovoNomeArteField;
+    @FXML
+    private javafx.scene.control.PasswordField nuovaPasswordField;
+    @FXML
+    private javafx.scene.control.PasswordField confermaPasswordField;
+    
+    @FXML
+    private javafx.scene.control.TextField nuovaCarrieraField;
+    @FXML
+    private javafx.scene.control.TextField anniCarrieraField;
+    
+    @FXML
+    private javafx.scene.control.TableView<pkgEntity.CarrieraEntity> carriereTable;
+    @FXML
+    private javafx.scene.control.TableColumn<pkgEntity.CarrieraEntity, String> colTipoCarriera;
+    @FXML
+    private javafx.scene.control.TableColumn<pkgEntity.CarrieraEntity, Integer> colAnniCarriera;
+    @FXML
+    private javafx.scene.control.TableColumn<pkgEntity.CarrieraEntity, Void> colAzioneCarriera;
+
+    @FXML
     public void initialize() {
         percorsoCol.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("percorso"));
         
@@ -62,7 +85,58 @@ public class GestioneProfiloCtrl {
             }
         });
 
+        colTipoCarriera.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("tipo"));
+        colAnniCarriera.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("anniDiCarriera"));
+        colAzioneCarriera.setCellFactory(col -> new javafx.scene.control.TableCell<>() {
+            private final javafx.scene.control.Button btn = new javafx.scene.control.Button("Rimuovi");
+            {
+                btn.setStyle("-fx-background-color: #dc3545; -fx-text-fill: white;");
+                btn.setOnAction(e -> {
+                    pkgEntity.CarrieraEntity car = getTableView().getItems().get(getIndex());
+                    pkgBoundary.DBMSboundary.getInstance().removeDBMSCarriereSelezionate(car.getIdCarriera());
+                    loadCarriere();
+                });
+            }
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                setGraphic(empty ? null : btn);
+            }
+        });
+
         loadDocumenti();
+        loadProfilo();
+        loadCarriere();
+    }
+
+    private void loadProfilo() {
+        try {
+            java.sql.ResultSet rs = pkgBoundary.DBMSboundary.getInstance().queryDBMSProfiloArtista(getUtenteCorrente());
+            if (rs != null && rs.next()) {
+                String nomeArte = rs.getString("nomeDarte");
+                nomeArteLabel.setText(nomeArte != null ? nomeArte : "");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void loadCarriere() {
+        try {
+            carriereTable.getItems().clear();
+            java.sql.ResultSet rs = pkgBoundary.DBMSboundary.getInstance().queryDBMSListaCarriere(getUtenteCorrente());
+            while (rs != null && rs.next()) {
+                pkgEntity.CarrieraEntity car = new pkgEntity.CarrieraEntity(
+                    rs.getInt("idCarriera"),
+                    rs.getString("codiceFiscaleArtist"),
+                    rs.getString("tipo"),
+                    rs.getInt("anniDiCarriera")
+                );
+                carriereTable.getItems().add(car);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void loadDocumenti() {
@@ -122,6 +196,96 @@ public class GestioneProfiloCtrl {
                 alert.setHeaderText(null);
                 alert.setContentText("Documento caricato con successo!");
                 alert.showAndWait();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @FXML
+    public void cambiaNomeArte(ActionEvent event) {
+        String nuovoNome = nuovoNomeArteField.getText();
+        if (nuovoNome == null || nuovoNome.trim().isEmpty()) {
+            new textmessage.ErrorText("Inserisci un nome d'arte valido.").okay();
+            return;
+        }
+        try {
+            boolean giaInUso = pkgBoundary.DBMSboundary.getInstance().queryDBMSVerificaNomeArte(nuovoNome.trim());
+            if (giaInUso) {
+                new textmessage.ErrorText("Nome d'arte non disponibile.").okay();
+            } else {
+                pkgBoundary.DBMSboundary.getInstance().updateDBMSNomeArte(getUtenteCorrente(), nuovoNome.trim());
+                new textmessage.SuccessfulText("Nome d'arte aggiornato con successo!").okay();
+                nuovoNomeArteField.clear();
+                loadProfilo();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    public void cambiaPassword(ActionEvent event) {
+        String pwd1 = nuovaPasswordField.getText();
+        String pwd2 = confermaPasswordField.getText();
+        if (pwd1 == null || pwd1.isEmpty() || pwd2 == null || pwd2.isEmpty()) {
+            new textmessage.ErrorText("Inserisci la nuova password in entrambi i campi.").okay();
+            return;
+        }
+        if (!pwd1.equals(pwd2)) {
+            new textmessage.ErrorText("Le password non coincidono.").okay();
+            return;
+        }
+        try {
+            boolean pwdInUso = pkgBoundary.DBMSboundary.getInstance().queryDBMSVerificaPassword(getUtenteCorrente(), pwd1);
+            if (pwdInUso) {
+                new textmessage.ErrorText("Attenzione: la nuova password deve essere diversa dalla precedente.").okay();
+            } else {
+                pkgBoundary.DBMSboundary.getInstance().updateDBMSPassword(getUtenteCorrente(), pwd1);
+                new textmessage.SuccessfulText("Password aggiornata con successo!").okay();
+                nuovaPasswordField.clear();
+                confermaPasswordField.clear();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    public void aggiungiCarriera(ActionEvent event) {
+        String tipo = nuovaCarrieraField.getText();
+        String anniStr = anniCarrieraField.getText();
+        if (tipo == null || tipo.trim().isEmpty() || anniStr == null || anniStr.trim().isEmpty()) {
+            new textmessage.ErrorText("Inserisci tipologia e anni di carriera.").okay();
+            return;
+        }
+        try {
+            int anni = Integer.parseInt(anniStr.trim());
+            pkgBoundary.DBMSboundary.getInstance().insertDBMSCarriera(getUtenteCorrente(), tipo.trim(), anni);
+            new textmessage.SuccessfulText("Carriera aggiunta!").okay();
+            nuovaCarrieraField.clear();
+            anniCarrieraField.clear();
+            loadCarriere();
+        } catch (NumberFormatException e) {
+            new textmessage.ErrorText("Gli anni devono essere un numero intero.").okay();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    public void cancellaProfilo(ActionEvent event) {
+        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Cancella Profilo");
+        alert.setHeaderText("Azione irreversibile");
+        alert.setContentText("Vuoi davvero cancellare il tuo profilo e tutti i dati (stanze, documenti) ad esso associati?");
+        
+        java.util.Optional<javafx.scene.control.ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == javafx.scene.control.ButtonType.OK) {
+            try {
+                pkgBoundary.DBMSboundary.getInstance().removeDBMSProfiloArtista(getUtenteCorrente());
+                new textmessage.SuccessfulText("Profilo cancellato con successo.").okay();
+                doLogout(event);
             } catch (Exception e) {
                 e.printStackTrace();
             }
