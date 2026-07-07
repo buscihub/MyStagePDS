@@ -7,13 +7,16 @@ import java.util.Scanner;
 
 public class DBMSboundary {
     private static DBMSboundary instance;
-    private static final String URL = "jdbc:sqlite:database.db";
+    private static final String URL = "jdbc:sqlite:database.db?busy_timeout=120000";
     private Connection connection;
 
     private DBMSboundary() {
         try {
             Class.forName("org.sqlite.JDBC");
             this.connection = DriverManager.getConnection(URL);
+            try (Statement stmt = this.connection.createStatement()) {
+                stmt.execute("PRAGMA foreign_keys = ON;");
+            }
             initializeDatabase();
         } catch (Exception e) {
             e.printStackTrace();
@@ -139,7 +142,7 @@ public class DBMSboundary {
         }
     }
 
-    public int insertDBMSCreaProfilo(String nome, String cognome, String dataDiNascita, String sesso, String codiceFiscale, String nomeDarte, String email, String password) {
+    public int insertDBMSCreaProfilo(String nome, String cognome, String dataDiNascita, String sesso, String codiceFiscale, String nomeDarte, String carriera, int anniCarriera, String email, String password) {
         try {
             String query = "INSERT INTO ARTISTA (codiceFiscale, nome, cognome, dataDiNascita, sesso, nomeDarte, email, password, urlImmagineProfilo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement ps = getConnection().prepareStatement(query);
@@ -152,7 +155,19 @@ public class DBMSboundary {
             ps.setString(7, email);
             ps.setString(8, password);
             ps.setString(9, "default.png");
-            return ps.executeUpdate();
+            
+            int res = ps.executeUpdate();
+            
+            if (res > 0 && carriera != null && !carriera.trim().isEmpty()) {
+                String queryCarriera = "INSERT INTO CARRIERA (codiceFiscaleArtist, tipologia, anniDiEsperienza) VALUES (?, ?, ?)";
+                PreparedStatement ps2 = getConnection().prepareStatement(queryCarriera);
+                ps2.setString(1, codiceFiscale);
+                ps2.setString(2, carriera);
+                ps2.setInt(3, anniCarriera);
+                ps2.executeUpdate();
+            }
+            
+            return res;
         } catch (SQLException e) {
             salvaDatiEmergenza("Creazione Profilo", codiceFiscale + "," + email);
             e.printStackTrace();
@@ -162,6 +177,18 @@ public class DBMSboundary {
 
     public ResultSet queryDBMSVerificaEsistenzaAccount(String email) {
         return queryDBMSVerificaEmail(email);
+    }
+
+    public ResultSet queryDBMSVerificaEsistenzaAccountByCF(String codiceFiscale) {
+        try {
+            String query = "SELECT * FROM ARTISTA WHERE codiceFiscale = ?";
+            PreparedStatement ps = getConnection().prepareStatement(query);
+            ps.setString(1, codiceFiscale);
+            return ps.executeQuery();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public ResultSet queryDBMSVerificaEmail(String email) {
@@ -371,6 +398,18 @@ public class DBMSboundary {
     public ResultSet queryDBMSListaDocumenti(String codiceFiscale) {
         try {
             String query = "SELECT * FROM DOCUMENTO WHERE codiceFiscaleArtist = ?";
+            PreparedStatement ps = getConnection().prepareStatement(query);
+            ps.setString(1, codiceFiscale);
+            return ps.executeQuery();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public ResultSet queryDBMSListaDocumentiVisibili(String codiceFiscale) {
+        try {
+            String query = "SELECT * FROM DOCUMENTO WHERE codiceFiscaleArtist = ? AND visibile = 1";
             PreparedStatement ps = getConnection().prepareStatement(query);
             ps.setString(1, codiceFiscale);
             return ps.executeQuery();

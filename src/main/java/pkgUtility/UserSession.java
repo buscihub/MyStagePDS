@@ -35,4 +35,27 @@ public class UserSession {
     public void setStanzaSelezionata(Integer stanzaSelezionata) {
         this.stanzaSelezionata = stanzaSelezionata;
     }
+
+    private String emailInVerifica;
+    private String azioneVerifica;
+
+    public String getEmailInVerifica() { return emailInVerifica; }
+    public void setEmailInVerifica(String email) { this.emailInVerifica = email; }
+
+    public String getAzioneVerifica() { return azioneVerifica; }
+    public void setAzioneVerifica(String azione) { this.azioneVerifica = azione; }
+    
+    private java.util.Map<String, Object> sessionCache = new java.util.HashMap<>();
+    
+    public void saveToCache(String key, Object data) {
+        sessionCache.put(key, data);
+    }
+    
+    public Object retrieveFromCache(String key) {
+        return sessionCache.get(key);
+    }
+    
+    public void clearCache(String key) {
+        sessionCache.remove(key);
+    }
 }

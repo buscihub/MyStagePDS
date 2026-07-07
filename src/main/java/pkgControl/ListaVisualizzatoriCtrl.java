@@ -16,7 +16,7 @@ import java.net.URL;
 import java.sql.ResultSet;
 import java.util.ResourceBundle;
 
-public class StatisticheStanzaCtrl implements Initializable {
+public class ListaVisualizzatoriCtrl implements Initializable {
 
     @FXML private Label titoloLabel;
     @FXML private TableView<VisualizzazioneDto> statisticheTable;
@@ -25,7 +25,7 @@ public class StatisticheStanzaCtrl implements Initializable {
     @FXML private TableColumn<VisualizzazioneDto, String> colEmail;
     @FXML private TableColumn<VisualizzazioneDto, String> colData;
 
-    private ObservableList<VisualizzazioneDto> statisticheList = FXCollections.observableArrayList();
+    private final ObservableList<VisualizzazioneDto> statisticheList = FXCollections.observableArrayList();
     private Integer idStanzaCorrente;
     private String linkStanza;
 
@@ -86,12 +86,15 @@ public class StatisticheStanzaCtrl implements Initializable {
     @FXML
     public void goToStanze(ActionEvent event) {
         UserSession.getInstance().setStanzaSelezionata(null);
-        Router.getInstance().navigate("gestione_stanze.fxml", "ShareRoomAfam - Gestione Stanze");
+        Router.getInstance().navigate("stanze.fxml", "ShareRoomAfam - Gestione Stanze");
     }
 
     @FXML
     public void handleLogout(ActionEvent event) {
-        UserSession.getInstance().logout();
-        Router.getInstance().navigate("login.fxml", "ShareRoomAfam - Login");
+        pkgTextmessage.ConfirmText conferma = new pkgTextmessage.ConfirmText("Vuoi davvero disconnetterti?");
+        if (conferma.si()) {
+            UserSession.getInstance().logout();
+            Router.getInstance().navigate("login.fxml", "ShareRoomAfam - Login");
+        }
     }
 }

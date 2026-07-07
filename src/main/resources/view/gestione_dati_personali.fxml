@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pkgControl.GestioneDatiPersonaliCtrl" stylesheets="@../css/style.css">
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+    </padding>
+    
+    <HBox spacing="50" alignment="CENTER">
+        <!-- Sezione Modifica Immagine e Nome Arte / Password -->
+        <VBox spacing="15" alignment="CENTER">
+            <fx:include source="modifica_immagine_profilo.fxml" />
+            
+            <Label text="Modifica Nome d'Arte" style="-fx-font-weight: bold; -fx-font-size: 14px; -fx-padding: 10px 0 0 0;"/>
+            <HBox spacing="10">
+                <TextField fx:id="nuovoNomeArteField" promptText="Nuovo Nome d'Arte" styleClass="input-field"/>
+                <Button text="Salva" onAction="#cambiaNomeArte" styleClass="secondary-button"/>
+            </HBox>
+            
+            <Label text="Modifica Password" style="-fx-font-weight: bold; -fx-font-size: 14px; -fx-padding: 20px 0 0 0;"/>
+            <PasswordField fx:id="nuovaPasswordField" promptText="Nuova Password" styleClass="input-field"/>
+            <PasswordField fx:id="confermaPasswordField" promptText="Conferma Password" styleClass="input-field"/>
+            <Button text="Cambia Password" onAction="#cambiaPassword" styleClass="secondary-button"/>
+        </VBox>
+        
+        <!-- Sezione Carriere -->
+        <fx:include source="modifica_carriera.fxml" />
+    </HBox>
+
+    <!-- Zona Pericolo: Cancella Profilo -->
+    <VBox alignment="CENTER" spacing="10" style="-fx-padding: 30px 0 0 0;">
+        <Separator />
+        <Label text="Zona Pericolo" style="-fx-font-weight: bold; -fx-text-fill: red;"/>
+        <Button text="CANCELLA PROFILO" onAction="#cancellaProfilo" style="-fx-background-color: #dc3545; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 10px;"/>
+        <Label text="L'operazione è irreversibile e cancellerà tutte le tue stanze e documenti." style="-fx-font-size: 10px; -fx-text-fill: gray;"/>
+    </VBox>
+</VBox>

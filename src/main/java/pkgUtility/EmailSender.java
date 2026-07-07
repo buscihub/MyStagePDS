@@ -36,8 +36,13 @@ public class EmailSender {
             // To avoid crash if credentials are wrong, we catch AuthenticationFailedException
             // Transport.send(message); // Uncomment to really send
             
-            System.out.println("[SIMULAZIONE INVIO EMAIL] A: " + emailDestinatario + " | Testo: Il tuo codice è " + codiceGenerato);
-            
+            System.out.println("\n=======================================================");
+            System.out.println(" 🚨 SIMULAZIONE INVIO EMAIL 2FA 🚨");
+            System.out.println("=======================================================");
+            System.out.println("Destinatario: " + emailDestinatario);
+            System.out.println("Codice OTP:   " + codiceGenerato);
+            System.out.println("=======================================================\n");
+
             return true;
         } catch (Exception mex) {
             mex.printStackTrace();

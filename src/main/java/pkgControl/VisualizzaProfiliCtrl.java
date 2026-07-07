@@ -2,21 +2,36 @@ package pkgControl;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.VBox;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 import pkgUtility.Router;
+import pkgBoundary.DBMSboundary;
+import pkgTextmessage.ErrorText;
+import java.io.File;
+import java.sql.ResultSet;
 
 public class VisualizzaProfiliCtrl {
 
     @FXML
-    private javafx.scene.control.TextField searchField;
+    private TextField searchField;
 
     @FXML
-    private javafx.scene.control.ListView<String> profiliList;
+    private ListView<String> profiliList;
 
     @FXML
-    private javafx.scene.control.TextField carrieraFilterField;
+    private TextField carrieraFilterField;
 
     @FXML
-    private javafx.scene.control.TextField anniFilterField;
+    private TextField anniFilterField;
 
     @FXML
     public void goToProfilo(ActionEvent event) {
@@ -26,11 +41,12 @@ public class VisualizzaProfiliCtrl {
     @FXML
     public void cercaProfili(ActionEvent event) {
         String keyword = searchField.getText();
-        if (keyword == null) keyword = "";
-        
+        if (keyword == null)
+            keyword = "";
+
         profiliList.getItems().clear();
         try {
-            java.sql.ResultSet rs = pkgBoundary.DBMSboundary.getInstance().queryDBMSCercaArtista(keyword);
+            ResultSet rs = DBMSboundary.getInstance().queryDBMSCercaArtista(keyword);
             while (rs != null && rs.next()) {
                 String cf = rs.getString("codiceFiscale");
                 String nome = rs.getString("nome");
@@ -40,7 +56,7 @@ public class VisualizzaProfiliCtrl {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            new pkgBoundary.ErrorText("Errore durante la ricerca").okay();
+            new ErrorText("Errore durante la ricerca").okay();
         }
     }
 
@@ -48,13 +64,10 @@ public class VisualizzaProfiliCtrl {
     public void filtraProfili(ActionEvent event) {
         String carriera = carrieraFilterField.getText();
         String anniStr = anniFilterField.getText();
-        
+
         if (carriera == null || carriera.trim().isEmpty() || anniStr == null || anniStr.trim().isEmpty()) {
-            javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.WARNING);
-            alert.setTitle("Attenzione");
-            alert.setHeaderText(null);
-            alert.setContentText("Inserire sia la tipologia di carriera che gli anni minimi di esperienza.");
-            alert.showAndWait();
+            new pkgTextmessage.ErrorText("Inserire sia la tipologia di carriera che gli anni minimi di esperienza.")
+                    .okay();
             return;
         }
 
@@ -62,17 +75,13 @@ public class VisualizzaProfiliCtrl {
         try {
             anni = Integer.parseInt(anniStr.trim());
         } catch (NumberFormatException e) {
-            javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.ERROR);
-            alert.setTitle("Errore");
-            alert.setHeaderText(null);
-            alert.setContentText("Gli anni di esperienza devono essere un numero intero.");
-            alert.showAndWait();
+            new pkgTextmessage.ErrorText("Gli anni di esperienza devono essere un numero intero.").okay();
             return;
         }
 
         profiliList.getItems().clear();
         try {
-            java.sql.ResultSet rs = pkgBoundary.DBMSboundary.getInstance().queryDBMSFiltraArtisti(carriera.trim(), anni);
+            ResultSet rs = DBMSboundary.getInstance().queryDBMSFiltraArtisti(carriera.trim(), anni);
             while (rs != null && rs.next()) {
                 String cf = rs.getString("codiceFiscale");
                 String nome = rs.getString("nome");
@@ -82,12 +91,12 @@ public class VisualizzaProfiliCtrl {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            new pkgBoundary.ErrorText("Errore durante il filtraggio").okay();
+            new ErrorText("Errore durante il filtraggio").okay();
         }
     }
 
     @FXML
-    public void onProfiloClicked(javafx.scene.input.MouseEvent event) {
+    public void onProfiloClicked(MouseEvent event) {
         if (event.getClickCount() == 2) {
             String selected = profiliList.getSelectionModel().getSelectedItem();
             if (selected != null) {
@@ -99,39 +108,39 @@ public class VisualizzaProfiliCtrl {
 
     private void mostraDocumenti(String cf) {
         try {
-            java.sql.ResultSet rs = pkgBoundary.DBMSboundary.getInstance().queryDBMSListaDocumenti(cf);
-            javafx.scene.layout.VBox vbox = new javafx.scene.layout.VBox(10);
-            vbox.setAlignment(javafx.geometry.Pos.CENTER);
+            ResultSet rs = DBMSboundary.getInstance().queryDBMSListaDocumentiVisibili(cf);
+            VBox vbox = new VBox(10);
+            vbox.setAlignment(Pos.CENTER);
             boolean found = false;
 
             while (rs != null && rs.next()) {
                 found = true;
                 String path = rs.getString("percorso");
                 try {
-                    java.io.File file = new java.io.File(path);
-                    if(file.exists()) {
-                        javafx.scene.image.Image img = new javafx.scene.image.Image(file.toURI().toString());
-                        javafx.scene.image.ImageView imgView = new javafx.scene.image.ImageView(img);
+                    File file = new File(path);
+                    if (file.exists()) {
+                        Image img = new Image(file.toURI().toString());
+                        ImageView imgView = new ImageView(img);
                         imgView.setFitWidth(300);
                         imgView.setPreserveRatio(true);
                         vbox.getChildren().add(imgView);
                     } else {
-                        vbox.getChildren().add(new javafx.scene.control.Label("File non trovato: " + path));
+                        vbox.getChildren().add(new Label("File non trovato: " + path));
                     }
                 } catch (Exception ex) {
-                    vbox.getChildren().add(new javafx.scene.control.Label("Errore caricamento: " + path));
+                    vbox.getChildren().add(new Label("Errore caricamento: " + path));
                 }
             }
 
             if (!found) {
-                vbox.getChildren().add(new javafx.scene.control.Label("Nessun file presente per questo utente."));
+                vbox.getChildren().add(new Label("Nessun file presente per questo utente."));
             }
 
-            javafx.scene.control.ScrollPane sp = new javafx.scene.control.ScrollPane(vbox);
+            ScrollPane sp = new ScrollPane(vbox);
             sp.setFitToWidth(true);
 
-            javafx.scene.Scene scene = new javafx.scene.Scene(sp, 400, 500);
-            javafx.stage.Stage stage = new javafx.stage.Stage();
+            Scene scene = new Scene(sp, 400, 500);
+            Stage stage = new Stage();
             stage.setTitle("File dell'utente");
             stage.setScene(scene);
             stage.show();

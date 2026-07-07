@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.ImageView?>
+
+<VBox spacing="15" alignment="CENTER" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pkgControl.ModificaImmagineProfiloCtrl">
+    <Label text="Immagine Profilo" style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
+    <ImageView fx:id="avatarImageView" fitWidth="100" fitHeight="100" />
+    <HBox spacing="10" alignment="CENTER">
+        <Button text="Carica" onAction="#caricaAvatar" styleClass="secondary-button"/>
+        <Button text="Rimuovi" onAction="#rimuoviAvatar" styleClass="secondary-button"/>
+    </HBox>
+</VBox>

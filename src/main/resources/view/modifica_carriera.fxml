@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="10" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pkgControl.ModificaCarrieraCtrl">
+    <Label text="La Mia Carriera" style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
+    <HBox spacing="10">
+        <TextField fx:id="nuovaCarrieraField" promptText="Tipologia (es. Cantante)" styleClass="input-field" prefWidth="150"/>
+        <TextField fx:id="anniCarrieraField" promptText="Anni" styleClass="input-field" prefWidth="60"/>
+        <Button text="Aggiungi" onAction="#aggiungiCarriera" styleClass="secondary-button"/>
+    </HBox>
+    <TableView fx:id="carriereTable" prefHeight="150" prefWidth="300">
+        <columns>
+            <TableColumn fx:id="colTipoCarriera" text="Tipologia" prefWidth="120"/>
+            <TableColumn fx:id="colAnniCarriera" text="Anni" prefWidth="80"/>
+            <TableColumn fx:id="colAzioneCarriera" text="Azione" prefWidth="80"/>
+        </columns>
+    </TableView>
+</VBox>

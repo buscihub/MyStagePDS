@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pkgControl.GestisciDocumentiCtrl" stylesheets="@../css/style.css">
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+    </padding>
+    <Label text="Il Mio Profilo Artista" styleClass="title-label"/>
+    
+    <HBox spacing="30" alignment="CENTER">
+        <VBox spacing="10" alignment="CENTER">
+            <Label text="Nome d'Arte:" style="-fx-font-weight: bold;"/>
+            <Label fx:id="nomeArteLabel" text="..."/>
+        </VBox>
+    </HBox>
+    
+    <Label text="Carica un nuovo documento" style="-fx-font-weight: bold; -fx-padding: 20px 0 0 0;"/>
+    <HBox spacing="10" alignment="CENTER">
+        <Button text="Seleziona File..." onAction="#selezionaFile" styleClass="primary-button"/>
+    </HBox>
+    
+    <Label text="I Miei Documenti" style="-fx-font-weight: bold; -fx-padding: 20px 0 0 0;"/>
+    <TableView fx:id="documentiTable" prefHeight="250" prefWidth="500">
+        <columns>
+            <TableColumn fx:id="percorsoCol" text="Percorso" prefWidth="250"/>
+            <TableColumn fx:id="visibileCol" text="Pubblico" prefWidth="100"/>
+            <TableColumn fx:id="azioneCol" text="Azione" prefWidth="100"/>
+        </columns>
+    </TableView>
+</VBox>

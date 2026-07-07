@@ -18,6 +18,8 @@
         <ComboBox fx:id="sessoField" promptText="Sesso" styleClass="input-field" prefWidth="300"/>
         <TextField fx:id="codiceFiscaleField" promptText="Codice Fiscale" styleClass="input-field"/>
         <TextField fx:id="nomeDarteField" promptText="Nome d'Arte" styleClass="input-field"/>
+        <TextField fx:id="carrieraField" promptText="Tipo di Carriera (Es. Musicista, Pittore...)" styleClass="input-field"/>
+        <TextField fx:id="anniCarrieraField" promptText="Anni di Carriera (Es. 5)" styleClass="input-field"/>
         <TextField fx:id="emailField" promptText="Email" styleClass="input-field"/>
         <PasswordField fx:id="passwordField" promptText="Password" styleClass="input-field"/>
     </VBox>

@@ -8,6 +8,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
+import javafx.stage.FileChooser;
+import javafx.stage.Window;
 import pkgBoundary.DBMSboundary;
 import pkgEntity.DocumentoStanzaDto;
 import pkgUtility.Router;
@@ -24,7 +26,7 @@ public class VistaScouterCtrl implements Initializable {
     @FXML private TableColumn<DocumentoStanzaDto, String> colNomeFile;
     @FXML private TableColumn<DocumentoStanzaDto, Void> colAzioni;
 
-    private ObservableList<DocumentoStanzaDto> documentiList = FXCollections.observableArrayList();
+    private final ObservableList<DocumentoStanzaDto> documentiList = FXCollections.observableArrayList();
     private Integer idStanzaCorrente;
 
     @Override
@@ -112,17 +114,14 @@ public class VistaScouterCtrl implements Initializable {
                 if (java.awt.Desktop.isDesktopSupported()) {
                     java.awt.Desktop.getDesktop().open(file);
                 } else {
-                    Alert alert = new Alert(Alert.AlertType.WARNING, "Il sistema non supporta l'apertura automatica dei file.");
-                    alert.showAndWait();
+                    new pkgTextmessage.ErrorText("Il sistema non supporta l'apertura automatica dei file.").okay();
                 }
             } else {
-                Alert alert = new Alert(Alert.AlertType.ERROR, "File non trovato nel percorso: " + doc.getPercorso());
-                alert.showAndWait();
+                new pkgTextmessage.ErrorText("File non trovato nel percorso: " + doc.getPercorso()).okay();
             }
         } catch (Exception e) {
             e.printStackTrace();
-            Alert alert = new Alert(Alert.AlertType.ERROR, "Impossibile aprire il file.");
-            alert.showAndWait();
+            new pkgTextmessage.ErrorText("Impossibile aprire the file.").okay();
         }
     }
 
@@ -130,28 +129,25 @@ public class VistaScouterCtrl implements Initializable {
         try {
             java.io.File sourceFile = new java.io.File(doc.getPercorso());
             if (!sourceFile.exists()) {
-                Alert alert = new Alert(Alert.AlertType.ERROR, "File sorgente non trovato.");
-                alert.showAndWait();
+                new pkgTextmessage.ErrorText("File sorgente non trovato.").okay();
                 return;
             }
 
-            javafx.stage.FileChooser fileChooser = new javafx.stage.FileChooser();
+            FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Salva Documento");
             fileChooser.setInitialFileName(sourceFile.getName());
             
             // Per ottenere la Window corrente, usiamo la tabella come riferimento
-            javafx.stage.Window window = documentiTable.getScene().getWindow();
+            Window window = documentiTable.getScene().getWindow();
             java.io.File destFile = fileChooser.showSaveDialog(window);
 
             if (destFile != null) {
                 java.nio.file.Files.copy(sourceFile.toPath(), destFile.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-                Alert alert = new Alert(Alert.AlertType.INFORMATION, "Download completato con successo in:\n" + destFile.getAbsolutePath());
-                alert.showAndWait();
+                new pkgTextmessage.SuccessfulText("Download completato con successo in:\n" + destFile.getAbsolutePath()).okay();
             }
         } catch (Exception e) {
             e.printStackTrace();
-            Alert alert = new Alert(Alert.AlertType.ERROR, "Errore durante il download del file.");
-            alert.showAndWait();
+            new pkgTextmessage.ErrorText("Errore durante il download del file.").okay();
         }
     }
 

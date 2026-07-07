@@ -17,89 +17,11 @@
     
         <TabPane tabClosingPolicy="UNAVAILABLE" styleClass="main-container">
             <Tab text="I Miei Documenti">
-                <VBox alignment="CENTER" spacing="20.0">
-                    <padding>
-                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
-                    </padding>
-                    <Label text="Il Mio Profilo Artista" styleClass="title-label"/>
-                    
-                    <HBox spacing="30" alignment="CENTER">
-                        <VBox spacing="10">
-                            <Label text="Nome d'Arte:" style="-fx-font-weight: bold;"/>
-                            <Label fx:id="nomeArteLabel" text="Nome Artista Placeholder"/>
-                        </VBox>
-                    </HBox>
-                    
-                    <Label text="Carica un nuovo documento" style="-fx-font-weight: bold; -fx-padding: 20px 0 0 0;"/>
-                    <HBox spacing="10" alignment="CENTER">
-                        <Button text="Seleziona File..." onAction="#selezionaFile" styleClass="primary-button"/>
-                    </HBox>
-                    
-                    <Label text="I Miei Documenti" style="-fx-font-weight: bold; -fx-padding: 20px 0 0 0;"/>
-                    <TableView fx:id="documentiTable" prefHeight="250" prefWidth="500">
-                        <columns>
-                            <TableColumn fx:id="percorsoCol" text="Percorso" prefWidth="250"/>
-                            <TableColumn fx:id="visibileCol" text="Pubblico" prefWidth="100"/>
-                            <TableColumn fx:id="azioneCol" text="Azione" prefWidth="100"/>
-                        </columns>
-                    </TableView>
-                </VBox>
+                <fx:include source="gestisci_documenti.fxml"/>
             </Tab>
 
             <Tab text="Gestione Dati Personali">
-                <VBox alignment="CENTER" spacing="20.0">
-                    <padding>
-                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
-                    </padding>
-                    
-                    <HBox spacing="50" alignment="CENTER">
-                        <!-- Sezione Modifica Immagine e Nome Arte / Password -->
-                        <VBox spacing="15" alignment="CENTER">
-                            <Label text="Immagine Profilo" style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
-                            <javafx.scene.image.ImageView fx:id="avatarImageView" fitWidth="100" fitHeight="100" />
-                            <HBox spacing="10" alignment="CENTER">
-                                <Button text="Carica" onAction="#caricaAvatar" styleClass="secondary-button"/>
-                                <Button text="Rimuovi" onAction="#rimuoviAvatar" styleClass="secondary-button"/>
-                            </HBox>
-                            
-                            <Label text="Modifica Nome d'Arte" style="-fx-font-weight: bold; -fx-font-size: 14px; -fx-padding: 10px 0 0 0;"/>
-                            <HBox spacing="10">
-                                <TextField fx:id="nuovoNomeArteField" promptText="Nuovo Nome d'Arte" styleClass="input-field"/>
-                                <Button text="Salva" onAction="#cambiaNomeArte" styleClass="secondary-button"/>
-                            </HBox>
-                            
-                            <Label text="Modifica Password" style="-fx-font-weight: bold; -fx-font-size: 14px; -fx-padding: 20px 0 0 0;"/>
-                            <PasswordField fx:id="nuovaPasswordField" promptText="Nuova Password" styleClass="input-field"/>
-                            <PasswordField fx:id="confermaPasswordField" promptText="Conferma Password" styleClass="input-field"/>
-                            <Button text="Cambia Password" onAction="#cambiaPassword" styleClass="secondary-button"/>
-                        </VBox>
-                        
-                        <!-- Sezione Carriere -->
-                        <VBox spacing="10">
-                            <Label text="La Mia Carriera" style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
-                            <HBox spacing="10">
-                                <TextField fx:id="nuovaCarrieraField" promptText="Tipologia (es. Cantante)" styleClass="input-field" prefWidth="150"/>
-                                <TextField fx:id="anniCarrieraField" promptText="Anni" styleClass="input-field" prefWidth="60"/>
-                                <Button text="Aggiungi" onAction="#aggiungiCarriera" styleClass="secondary-button"/>
-                            </HBox>
-                            <TableView fx:id="carriereTable" prefHeight="150" prefWidth="300">
-                                <columns>
-                                    <TableColumn fx:id="colTipoCarriera" text="Tipologia" prefWidth="120"/>
-                                    <TableColumn fx:id="colAnniCarriera" text="Anni" prefWidth="80"/>
-                                    <TableColumn fx:id="colAzioneCarriera" text="Azione" prefWidth="80"/>
-                                </columns>
-                            </TableView>
-                        </VBox>
-                    </HBox>
-
-                    <!-- Zona Pericolo: Cancella Profilo -->
-                    <VBox alignment="CENTER" spacing="10" style="-fx-padding: 30px 0 0 0;">
-                        <Separator />
-                        <Label text="Zona Pericolo" style="-fx-font-weight: bold; -fx-text-fill: red;"/>
-                        <Button text="CANCELLA PROFILO" onAction="#cancellaProfilo" style="-fx-background-color: #dc3545; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 10px;"/>
-                        <Label text="L'operazione è irreversibile e cancellerà tutte le tue stanze e documenti." style="-fx-font-size: 10px; -fx-text-fill: gray;"/>
-                    </VBox>
-                </VBox>
+                <fx:include source="gestione_dati_personali.fxml"/>
             </Tab>
         </TabPane>
 </BorderPane>

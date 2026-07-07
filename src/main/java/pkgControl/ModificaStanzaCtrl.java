@@ -12,12 +12,14 @@ import pkgEntity.DocumentoEntity;
 import pkgEntity.DocumentoStanzaDto;
 import pkgUtility.Router;
 import pkgUtility.UserSession;
+import pkgTextmessage.ErrorText;
+import pkgTextmessage.SuccessfulText;
 
 import java.net.URL;
 import java.sql.ResultSet;
 import java.util.ResourceBundle;
 
-public class GestioneDocumentiStanzaCtrl implements Initializable {
+public class ModificaStanzaCtrl implements Initializable {
 
     @FXML private TableView<DocumentoEntity> documentiDisponibiliTable;
     @FXML private TableColumn<DocumentoEntity, String> colNomeDisponibile;
@@ -29,6 +31,7 @@ public class GestioneDocumentiStanzaCtrl implements Initializable {
     @FXML private TableColumn<DocumentoStanzaDto, Void> colRimuovi;
 
     @FXML private Label titoloLabel;
+    @FXML private TextField nuovoNomeStanzaField;
 
     private ObservableList<DocumentoEntity> documentiDisponibiliList = FXCollections.observableArrayList();
     private ObservableList<DocumentoStanzaDto> documentiStanzaList = FXCollections.observableArrayList();
@@ -149,13 +152,39 @@ public class GestioneDocumentiStanzaCtrl implements Initializable {
     }
 
     private void rimuoviDocumento(DocumentoStanzaDto doc) {
-        DBMSboundary.getInstance().queryDBMSRemoveDocumentiStanza(idStanzaCorrente, doc.getIdDocumento());
-        caricaDati();
+        pkgTextmessage.ConfirmText conferma = new pkgTextmessage.ConfirmText("Vuoi davvero rimuovere questo documento dalla stanza?");
+        if (conferma.si()) {
+            DBMSboundary.getInstance().queryDBMSRemoveDocumentiStanza(idStanzaCorrente, doc.getIdDocumento());
+            caricaDati();
+        }
     }
 
     private void aggiornaScaricabile(DocumentoStanzaDto doc, boolean scaricabile) {
         DBMSboundary.getInstance().queryDBMSUpdateScaricabiliENonScaricabiliDocumentiStanza(idStanzaCorrente, doc.getIdDocumento(), scaricabile);
         doc.setScaricabile(scaricabile); // update UI model
+    }
+
+    @FXML
+    public void rinominaStanza(ActionEvent event) {
+        String nuovoNome = nuovoNomeStanzaField.getText();
+        if (nuovoNome == null || nuovoNome.trim().isEmpty()) {
+            new ErrorText("Inserisci un nuovo nome valido").okay();
+            return;
+        }
+        
+        String cf = UserSession.getInstance().getUtenteLoggato();
+        if (DBMSboundary.getInstance().queryDBMSVerificaNomeStanza(cf, nuovoNome)) {
+            new ErrorText("Hai già una stanza con questo nome.").okay();
+            return;
+        }
+        
+        int res = DBMSboundary.getInstance().updateDBMSNomeStanza(idStanzaCorrente, nuovoNome);
+        if (res > 0) {
+            new SuccessfulText("Stanza rinominata con successo!").okay();
+            nuovoNomeStanzaField.clear();
+        } else {
+            new ErrorText("Errore durante l'aggiornamento.").okay();
+        }
     }
 
     @FXML
