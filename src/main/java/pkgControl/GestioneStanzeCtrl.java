@@ -136,6 +136,7 @@ public class GestioneStanzeCtrl implements Initializable {
 
         // Create Dialog for document selection
         Dialog<java.util.List<javafx.util.Pair<Integer, Boolean>>> dialog = new Dialog<>();
+        dialog.initOwner(pkgUtility.Router.getInstance().getStage());
         dialog.setTitle("Configura Stanza: " + nome);
         dialog.setHeaderText("Seleziona i documenti privati da includere e i permessi:");
 
@@ -218,6 +219,7 @@ public class GestioneStanzeCtrl implements Initializable {
 
     private void condividiStanza(StanzaEntity stanza) {
         Dialog<Void> dialog = new Dialog<>();
+        dialog.initOwner(pkgUtility.Router.getInstance().getStage());
         dialog.setTitle("Condividi Stanza");
         dialog.setHeaderText("Ecco il link univoco della tua stanza:");
 

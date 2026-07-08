@@ -18,7 +18,7 @@ public class ModificaImmagineProfiloCtrl {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Seleziona Immagine Profilo");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg"));
-        File destFile = fileChooser.showOpenDialog(null);
+        File destFile = fileChooser.showOpenDialog(Router.getInstance().getStage());
         if (destFile != null) {
             try {
                 String path = "src/main/resources/images/" + destFile.getName();

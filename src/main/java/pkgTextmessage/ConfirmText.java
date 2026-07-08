@@ -2,6 +2,7 @@ package pkgTextmessage;
 
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import pkgUtility.Router;
 
 import java.util.Optional;
 
@@ -14,6 +15,7 @@ public class ConfirmText {
         alert.setTitle("Conferma");
         alert.setHeaderText(null);
         alert.setContentText(message);
+        alert.initOwner(Router.getInstance().getStage());
     }
 
     public boolean okay() {

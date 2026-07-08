@@ -24,6 +24,10 @@ public class Router {
         this.primaryStage = stage;
     }
 
+    public Stage getStage() {
+        return primaryStage;
+    }
+
     public void navigate(String fxmlFile, String title) {
         if (primaryStage == null) {
             throw new IllegalStateException("Primary stage not set in Router.");

@@ -15,10 +15,11 @@ public class GestisciDocumentiCtrl {
     public void selezionaFile(ActionEvent event) {
         javafx.stage.FileChooser fileChooser = new javafx.stage.FileChooser();
         fileChooser.setTitle("Seleziona File da Caricare");
-        java.util.List<java.io.File> files = fileChooser.showOpenMultipleDialog(null);
+        java.util.List<java.io.File> files = fileChooser.showOpenMultipleDialog(pkgUtility.Router.getInstance().getStage());
 
         if (files != null && !files.isEmpty()) {
             javafx.scene.control.Dialog<java.util.Map<java.io.File, Boolean>> dialog = new javafx.scene.control.Dialog<>();
+            dialog.initOwner(pkgUtility.Router.getInstance().getStage());
             dialog.setTitle("Imposta Visibilità Documenti");
             dialog.setHeaderText("Definisci lo stato (visibile/privato) per ciascun documento");
 

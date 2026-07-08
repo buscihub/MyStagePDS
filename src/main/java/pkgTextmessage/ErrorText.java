@@ -1,6 +1,7 @@
 package pkgTextmessage;
 
 import javafx.scene.control.Alert;
+import pkgUtility.Router;
 
 public class ErrorText {
     private Alert alert;
@@ -10,6 +11,7 @@ public class ErrorText {
         alert.setTitle("Errore");
         alert.setHeaderText(null);
         alert.setContentText(message);
+        alert.initOwner(Router.getInstance().getStage());
     }
 
     public void okay() {
