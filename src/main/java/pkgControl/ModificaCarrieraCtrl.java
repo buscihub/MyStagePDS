@@ -1,6 +1,7 @@
 package pkgControl;
 
-import java.sql.ResultSet;
+import pkgBoundary.ResultDto;
+import pkgBoundary.ServerBoundary;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.event.ActionEvent;
@@ -8,7 +9,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
-import pkgBoundary.DBMSboundary;
 import pkgTextmessage.ErrorText;
 import pkgTextmessage.SuccessfulText;
 import pkgUtility.Router;
@@ -18,10 +18,13 @@ public class ModificaCarrieraCtrl {
 
     @FXML
     public void initialize() {
-        try { init_ListaCarriereCtrl(); } catch(Exception e) { /* ignore */ }
+        try {
+            init_ListaCarriereCtrl();
+        } catch (Exception e) {
+            /* ignore */ }
     }
 
-@FXML
+    @FXML
     public void goToAggiungiCarriera(ActionEvent event) {
         Router.getInstance().navigate("inserisci_dati_carriera.fxml", "MyStage - Aggiungi Carriera");
     }
@@ -36,19 +39,21 @@ public class ModificaCarrieraCtrl {
         Router.getInstance().navigate("gestione_dati_personali.fxml", "MyStage - Gestione Dati Personali");
     }
 
-@FXML private TextField nuovaCarrieraField;
-    @FXML private TextField anniCarrieraField;
+    @FXML
+    private TextField nuovaCarrieraField;
+    @FXML
+    private TextField anniCarrieraField;
 
     @FXML
     public void salvaModifiche(ActionEvent event) {
         String tipo = nuovaCarrieraField.getText();
         String anniStr = anniCarrieraField.getText();
-        
+
         if (tipo == null || tipo.trim().isEmpty() || anniStr == null || anniStr.trim().isEmpty()) {
             new ErrorText("Inserire sia la tipologia che gli anni di esperienza.").okay();
             return;
         }
-        
+
         int anni = 0;
         try {
             anni = Integer.parseInt(anniStr.trim());
@@ -56,9 +61,9 @@ public class ModificaCarrieraCtrl {
             new ErrorText("Gli anni devono essere un numero intero.").okay();
             return;
         }
-        
+
         String cf = UserSession.getInstance().getUtenteLoggato();
-        int res = DBMSboundary.getInstance().insertDBMSCarriera(cf, tipo, anni);
+        int res = ServerBoundary.getInstance().insertDBMSCarriera(cf, tipo, anni);
         if (res > 0) {
             new SuccessfulText("Carriera aggiunta con successo!").okay();
             nuovaCarrieraField.clear();
@@ -74,7 +79,7 @@ public class ModificaCarrieraCtrl {
         Router.getInstance().navigate("modifica_carriera.fxml", "MyStage - Modifica Carriera");
     }
 
-@FXML
+    @FXML
     private ListView<CheckBox> carriereListView;
 
     private void init_ListaCarriereCtrl() {
@@ -85,7 +90,7 @@ public class ModificaCarrieraCtrl {
         carriereListView.getItems().clear();
         String cf = UserSession.getInstance().getUtenteLoggato();
         try {
-            ResultSet rs = DBMSboundary.getInstance().queryDBMSListaCarriere(cf);
+            ResultDto rs = ServerBoundary.getInstance().queryDBMSListaCarriere(cf);
             while (rs != null && rs.next()) {
                 int idCarriera = rs.getInt("idCarriera");
                 String tipologia = rs.getString("tipologia");
@@ -118,7 +123,7 @@ public class ModificaCarrieraCtrl {
                 "Vuoi davvero rimuovere le carriere selezionate?");
         if (conferma.si()) {
             for (Integer id : toRemove) {
-                DBMSboundary.getInstance().removeDBMSCarriereSelezionate(id);
+                ServerBoundary.getInstance().removeDBMSCarriereSelezionate(id);
             }
             new SuccessfulText("Carriere rimosse con successo.").okay();
             Router.getInstance().navigate("modifica_carriera.fxml", "MyStage - Modifica Carriera");

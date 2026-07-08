@@ -4,7 +4,7 @@ import java.io.File;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.stage.FileChooser;
-import pkgBoundary.DBMSboundary;
+import pkgBoundary.ServerBoundary;
 import pkgTextmessage.ErrorText;
 import pkgTextmessage.SuccessfulText;
 import pkgUtility.Router;
@@ -26,7 +26,7 @@ public class ModificaImmagineProfiloCtrl {
                 }
                 String path = "src/main/resources/images/" + destFile.getName();
                 java.nio.file.Files.copy(destFile.toPath(), java.nio.file.Paths.get(path), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-                DBMSboundary.getInstance().queryDBMSUpdateImmagineProfilo(path, UserSession.getInstance().getUtenteLoggato());
+                ServerBoundary.getInstance().queryDBMSUpdateImmagineProfilo(path, UserSession.getInstance().getUtenteLoggato());
                 new SuccessfulText("Immagine aggiornata con successo.").okay();
                 Router.getInstance().navigate("gestione_dati_personali.fxml", "MyStage - Gestione Dati Personali");
             } catch (Exception e) {
@@ -40,7 +40,7 @@ public class ModificaImmagineProfiloCtrl {
     public void rimuoviAvatar(ActionEvent event) {
         pkgTextmessage.ConfirmText conferma = new pkgTextmessage.ConfirmText("Vuoi davvero rimuovere l'immagine del profilo?");
         if (conferma.si()) {
-            DBMSboundary.getInstance().queryDBMSUpdateImmagineProfilo("default.png", UserSession.getInstance().getUtenteLoggato());
+            ServerBoundary.getInstance().queryDBMSUpdateImmagineProfilo("default.png", UserSession.getInstance().getUtenteLoggato());
             new SuccessfulText("Immagine rimossa con successo.").okay();
             Router.getInstance().navigate("gestione_dati_personali.fxml", "MyStage - Gestione Dati Personali");
         }

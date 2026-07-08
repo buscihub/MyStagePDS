@@ -1,11 +1,11 @@
 package pkgControl;
 
-import java.sql.ResultSet;
+import pkgBoundary.ResultDto;
+import pkgBoundary.ServerBoundary;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import pkgBoundary.DBMSboundary;
 import pkgTextmessage.ErrorText;
 import pkgTextmessage.SuccessfulText;
 import pkgUtility.EmailSender;
@@ -16,21 +16,28 @@ public class AuthCtrl {
 
     @FXML
     public void initialize() {
-        try { init_AuthCtrl(); } catch(Exception e) { /* ignore */ }
-        try { init_HomeCtrl(); } catch(Exception e) { /* ignore */ }
+        try {
+            init_AuthCtrl();
+        } catch (Exception e) {
+            /* ignore */ }
+        try {
+            init_HomeCtrl();
+        } catch (Exception e) {
+            /* ignore */ }
     }
 
-@FXML
+    @FXML
     private void init_AuthCtrl() {
         if (enteSpidCombo != null) {
-            enteSpidCombo.setItems(javafx.collections.FXCollections.observableArrayList("Aruba", "InfoCert", "Poste", "Sielte", "SpidItalia", "TIM"));
+            enteSpidCombo.setItems(javafx.collections.FXCollections.observableArrayList("Aruba", "InfoCert", "Poste",
+                    "Sielte", "SpidItalia", "TIM"));
         }
         if (sessoField != null) {
             sessoField.setItems(javafx.collections.FXCollections.observableArrayList("M", "F", "Altro"));
         }
     }
 
-@FXML
+    @FXML
     private TextField emailField;
     @FXML
     private javafx.scene.control.PasswordField passwordField;
@@ -40,38 +47,39 @@ public class AuthCtrl {
     private javafx.scene.control.Label providerLabel;
 
     @FXML
-// deleted method duplicate
-// deleted method duplicate
-// deleted method duplicate
-// deleted method duplicate
-// deleted method duplicate
-// deleted method duplicate
-// deleted method duplicate
-// deleted method duplicate
-// deleted method duplicate
-// deleted method duplicate
-// deleted method duplicate
-// deleted method duplicate
-// deleted method duplicate
-// deleted method duplicate
-// deleted method duplicate
-// deleted method duplicate
-// deleted method duplicate
-// deleted method duplicate
-// deleted method duplicate
-// deleted method duplicate
-// deleted method duplicate
-// deleted method duplicate
-// deleted method duplicate
-// deleted method duplicate
-// deleted method duplicate
-// deleted method duplicate
-// deleted method duplicate
-// deleted method duplicate
-// deleted method duplicate
-// deleted method duplicate
+    // deleted method duplicate
+    // deleted method duplicate
+    // deleted method duplicate
+    // deleted method duplicate
+    // deleted method duplicate
+    // deleted method duplicate
+    // deleted method duplicate
+    // deleted method duplicate
+    // deleted method duplicate
+    // deleted method duplicate
+    // deleted method duplicate
+    // deleted method duplicate
+    // deleted method duplicate
+    // deleted method duplicate
+    // deleted method duplicate
+    // deleted method duplicate
+    // deleted method duplicate
+    // deleted method duplicate
+    // deleted method duplicate
+    // deleted method duplicate
+    // deleted method duplicate
+    // deleted method duplicate
+    // deleted method duplicate
+    // deleted method duplicate
+    // deleted method duplicate
+    // deleted method duplicate
+    // deleted method duplicate
+    // deleted method duplicate
+    // deleted method duplicate
+    // deleted method duplicate
 
-    private void salvaCacheRegistrazione(String email, String password, String nome, String cognome, String cf, String nomeDarte, String carriera, String anniCarriera, String dataNascita, String sesso) {
+    private void salvaCacheRegistrazione(String email, String password, String nome, String cognome, String cf,
+            String nomeDarte, String carriera, String anniCarriera, String dataNascita, String sesso) {
         java.util.Map<String, String> formData = new java.util.HashMap<>();
         formData.put("email", email);
         formData.put("password", password);
@@ -94,29 +102,33 @@ public class AuthCtrl {
     private javafx.scene.control.DatePicker dataNascitaField;
     @FXML
     private javafx.scene.control.ComboBox<String> sessoField;
-    @FXML private TextField codiceFiscaleField;
-    @FXML private TextField nomeDarteField;
-    @FXML private TextField carrieraField;
-    @FXML private TextField anniCarrieraField;
+    @FXML
+    private TextField codiceFiscaleField;
+    @FXML
+    private TextField nomeDarteField;
+    @FXML
+    private TextField carrieraField;
+    @FXML
+    private TextField anniCarrieraField;
 
     @FXML
     public void handleLogin(ActionEvent event) {
         String email = emailField.getText();
         String password = passwordField.getText();
-        
+
         if (email.isEmpty() || password.isEmpty()) {
             new pkgTextmessage.ErrorText("Inserire email e password.").okay();
             return;
         }
 
         try {
-            java.sql.ResultSet rs = DBMSboundary.getInstance().queryDBMSVerificaCredenziali(email, password);
+            ResultDto rs = ServerBoundary.getInstance().queryDBMSVerificaCredenziali(email, password);
             if (rs != null && rs.next()) {
                 // Generazione OTP per il login
                 String otp = String.format("%06d", new java.util.Random().nextInt(999999));
-                DBMSboundary.getInstance().insertDBMScodice(email, otp);
+                ServerBoundary.getInstance().insertDBMScodice(email, otp);
                 boolean sent = EmailSender.inviaCodice2FA(email, otp);
-                
+
                 if (sent) {
                     UserSession.getInstance().setEmailInVerifica(email);
                     UserSession.getInstance().setAzioneVerifica("LOGIN");
@@ -152,15 +164,16 @@ public class AuthCtrl {
         String nomeDarte = nomeDarteField.getText();
         String carriera = carrieraField != null ? carrieraField.getText() : "";
         String anniCarrieraStr = anniCarrieraField != null ? anniCarrieraField.getText() : "0";
-        
+
         String dataNascita = dataNascitaField.getValue() != null ? dataNascitaField.getValue().toString() : "";
         String sesso = sessoField.getValue() != null ? sessoField.getValue() : "ND";
-        
+
         if (email == null || password == null || email.isEmpty() || password.isEmpty() ||
-            nome == null || nome.isEmpty() || cognome == null || cognome.isEmpty() ||
-            cf == null || cf.isEmpty()) {
-            
-            salvaCacheRegistrazione(email, password, nome, cognome, cf, nomeDarte, carriera, anniCarrieraStr, dataNascita, sesso);
+                nome == null || nome.isEmpty() || cognome == null || cognome.isEmpty() ||
+                cf == null || cf.isEmpty()) {
+
+            salvaCacheRegistrazione(email, password, nome, cognome, cf, nomeDarte, carriera, anniCarrieraStr,
+                    dataNascita, sesso);
             new ErrorText("Compilare tutti i campi obbligatori.").okay();
             Router.getInstance().navigate("registrazione.fxml", "MyStage - Registrazione");
             return;
@@ -172,28 +185,32 @@ public class AuthCtrl {
                 anniCarriera = Integer.parseInt(anniCarrieraStr.trim());
             }
         } catch (NumberFormatException e) {
-            salvaCacheRegistrazione(email, password, nome, cognome, cf, nomeDarte, carriera, anniCarrieraStr, dataNascita, sesso);
+            salvaCacheRegistrazione(email, password, nome, cognome, cf, nomeDarte, carriera, anniCarrieraStr,
+                    dataNascita, sesso);
             new ErrorText("Gli anni di carriera devono essere un numero intero.").okay();
             Router.getInstance().navigate("registrazione.fxml", "MyStage - Registrazione");
             return;
         }
 
         try {
-            java.sql.ResultSet rs = DBMSboundary.getInstance().queryDBMSVerificaRegistrazione(cf, email);
+            ResultDto rs = ServerBoundary.getInstance().queryDBMSVerificaRegistrazione(cf, email);
             if (rs != null && rs.next()) {
-                salvaCacheRegistrazione(email, password, nome, cognome, cf, nomeDarte, carriera, String.valueOf(anniCarriera), dataNascita, sesso);
+                salvaCacheRegistrazione(email, password, nome, cognome, cf, nomeDarte, carriera,
+                        String.valueOf(anniCarriera), dataNascita, sesso);
                 new ErrorText("Registrazione fallita").okay();
                 Router.getInstance().navigate("registrazione.fxml", "MyStage - Registrazione");
                 return;
             }
 
-            int res = DBMSboundary.getInstance().insertDBMSCreaProfilo(nome, cognome, dataNascita, sesso, cf, nomeDarte, carriera, anniCarriera, email, password);
+            int res = ServerBoundary.getInstance().insertDBMSCreaProfilo(nome, cognome, dataNascita, sesso, cf,
+                    nomeDarte, carriera, anniCarriera, email, password);
             if (res > 0) {
                 new SuccessfulText("Registrazione effettuata con successo!").okay();
                 pkgUtility.UserSession.getInstance().clearCache("registrazione_form");
                 Router.getInstance().navigate("login.fxml", "MyStage - Login");
             } else {
-                salvaCacheRegistrazione(email, password, nome, cognome, cf, nomeDarte, carriera, String.valueOf(anniCarriera), dataNascita, sesso);
+                salvaCacheRegistrazione(email, password, nome, cognome, cf, nomeDarte, carriera,
+                        String.valueOf(anniCarriera), dataNascita, sesso);
                 new ErrorText("Connessione persa").okay();
                 Router.getInstance().navigate("registrazione.fxml", "MyStage - Registrazione");
             }
@@ -229,16 +246,16 @@ public class AuthCtrl {
     public void cliccaInviaSPID(ActionEvent event) {
         String provider = (String) UserSession.getInstance().retrieveFromCache("providerSPID");
         new SuccessfulText("Autenticazione in corso da parte del provider " + provider + "...").okay();
-        
+
         String cfSpid = "RSSMRA80A01H501U"; // CF mockato dal provider SPID
         try {
-            java.sql.ResultSet rs = DBMSboundary.getInstance().queryDBMSVerificaEsistenzaAccountByCF(cfSpid);
+            ResultDto rs = ServerBoundary.getInstance().queryDBMSVerificaEsistenzaAccountByCF(cfSpid);
             if (rs != null && rs.next()) {
                 String email = rs.getString("email");
                 String otp = String.format("%06d", new java.util.Random().nextInt(999999));
-                DBMSboundary.getInstance().insertDBMScodice(email, otp);
+                ServerBoundary.getInstance().insertDBMScodice(email, otp);
                 boolean sent = EmailSender.inviaCodice2FA(email, otp);
-                
+
                 if (sent) {
                     UserSession.getInstance().setEmailInVerifica(email);
                     UserSession.getInstance().setAzioneVerifica("LOGIN");
@@ -247,7 +264,8 @@ public class AuthCtrl {
                     new ErrorText("Errore durante l'invio dell'email per l'OTP.").okay();
                 }
             } else {
-                new ErrorText("Il Codice Fiscale fornito dallo SPID (" + cfSpid + ") non è associato ad alcun account registrato. Autenticazione fallita.").okay();
+                new ErrorText("Il Codice Fiscale fornito dallo SPID (" + cfSpid
+                        + ") non è associato ad alcun account registrato. Autenticazione fallita.").okay();
                 Router.getInstance().navigate("login.fxml", "MyStage - Login");
             }
         } catch (Exception e) {
@@ -266,7 +284,8 @@ public class AuthCtrl {
 
     @FXML
     public void handleGuestLogin(ActionEvent event) {
-        if (linkStanzaField == null) return;
+        if (linkStanzaField == null)
+            return;
         String link = linkStanzaField.getText();
         if (link == null || link.trim().isEmpty()) {
             new ErrorText("Inserisci un link valido.").okay();
@@ -274,16 +293,17 @@ public class AuthCtrl {
         }
 
         try {
-            java.sql.ResultSet rs = DBMSboundary.getInstance().queryDBMSStanzaByLink(link);
+            ResultDto rs = ServerBoundary.getInstance().queryDBMSStanzaByLink(link);
             if (rs != null && rs.next()) {
                 int idStanza = rs.getInt("idStanza");
                 UserSession.getInstance().setStanzaSelezionata(idStanza);
-                // Registra un visualizzatore anonimo (nome/email lasciati vuoti per accesso da link diretto)
+                // Registra un visualizzatore anonimo (nome/email lasciati vuoti per accesso da
+                // link diretto)
                 try {
-                    java.sql.ResultSet rsVis = DBMSboundary.getInstance().insertDBMSVisualizzatore("Ospite", "", "");
+                    ResultDto rsVis = ServerBoundary.getInstance().insertDBMSVisualizzatore("Ospite", "", "");
                     if (rsVis != null && rsVis.next()) {
                         int idVisualizzatore = rsVis.getInt(1);
-                        DBMSboundary.getInstance().insertDBMSVisualizzazione(idStanza, idVisualizzatore);
+                        ServerBoundary.getInstance().insertDBMSVisualizzazione(idStanza, idVisualizzatore);
                     }
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -303,7 +323,7 @@ public class AuthCtrl {
         Router.getInstance().navigate("cerca_artista.fxml", "MyStage - Ricerca Artisti");
     }
 
-@FXML
+    @FXML
     private TextField codiceField;
 
     @FXML
@@ -318,7 +338,7 @@ public class AuthCtrl {
         }
 
         try {
-            ResultSet rs = DBMSboundary.getInstance().queryDBMSVerificaCodice(email, codice);
+            ResultDto rs = ServerBoundary.getInstance().queryDBMSVerificaCodice(email, codice);
             if (rs != null && rs.next()) {
                 String cf = rs.getString("codiceFiscale");
 
@@ -352,7 +372,7 @@ public class AuthCtrl {
         Router.getInstance().navigate("login.fxml", "MyStage - Login");
     }
 
-@FXML
+    @FXML
     private TextField emailRecuperoField;
 
     @FXML
@@ -364,11 +384,11 @@ public class AuthCtrl {
         }
 
         try {
-            ResultSet rs = DBMSboundary.getInstance().queryDBMSVerificaEmail(email.trim());
+            ResultDto rs = ServerBoundary.getInstance().queryDBMSVerificaEmail(email.trim());
             if (rs != null && rs.next()) {
                 // RAD rcpr_pswd passo 6.1 — genera, salva e invia OTP
                 String otp = String.format("%06d", new java.util.Random().nextInt(999999));
-                DBMSboundary.getInstance().insertDBMScodice(email.trim(), otp);
+                ServerBoundary.getInstance().insertDBMScodice(email.trim(), otp);
 
                 boolean sent = EmailSender.inviaCodice2FA(email.trim(), otp);
                 if (sent) {
@@ -394,16 +414,17 @@ public class AuthCtrl {
         Router.getInstance().navigate("login.fxml", "MyStage - Login");
     }
 
-@FXML
+    @FXML
     private Label nomeArteLabel;
 
     @FXML
     private void init_HomeCtrl() {
         String cf = UserSession.getInstance().getUtenteLoggato();
-        if (cf == null) return;
-        
+        if (cf == null)
+            return;
+
         try {
-            ResultSet rs = DBMSboundary.getInstance().queryDBMSProfiloArtista(cf);
+            ResultDto rs = ServerBoundary.getInstance().queryDBMSProfiloArtista(cf);
             if (rs != null && rs.next()) {
                 String nomeArte = rs.getString("nomeDarte");
                 if (nomeArte != null && !nomeArte.isEmpty()) {
@@ -427,7 +448,6 @@ public class AuthCtrl {
         Router.getInstance().navigate("stanze.fxml", "MyStage - Gestione Stanze");
     }
 
-
     @FXML
     public void handleInvia_InserisciCodiceCtrl(ActionEvent event) {
         String codice = codiceField.getText();
@@ -440,7 +460,7 @@ public class AuthCtrl {
         }
 
         try {
-            ResultSet rs = DBMSboundary.getInstance().queryDBMSVerificaCodice(email, codice);
+            ResultDto rs = ServerBoundary.getInstance().queryDBMSVerificaCodice(email, codice);
             if (rs != null && rs.next()) {
                 String cf = rs.getString("codiceFiscale");
 
@@ -474,7 +494,6 @@ public class AuthCtrl {
         Router.getInstance().navigate("login.fxml", "MyStage - Login");
     }
 
-
     @FXML
     public void handleInviaEmail_RecuperaPasswordCtrl(ActionEvent event) {
         String email = emailRecuperoField.getText();
@@ -484,11 +503,11 @@ public class AuthCtrl {
         }
 
         try {
-            ResultSet rs = DBMSboundary.getInstance().queryDBMSVerificaEmail(email.trim());
+            ResultDto rs = ServerBoundary.getInstance().queryDBMSVerificaEmail(email.trim());
             if (rs != null && rs.next()) {
                 // RAD rcpr_pswd passo 6.1 — genera, salva e invia OTP
                 String otp = String.format("%06d", new java.util.Random().nextInt(999999));
-                DBMSboundary.getInstance().insertDBMScodice(email.trim(), otp);
+                ServerBoundary.getInstance().insertDBMScodice(email.trim(), otp);
 
                 boolean sent = EmailSender.inviaCodice2FA(email.trim(), otp);
                 if (sent) {
@@ -514,14 +533,14 @@ public class AuthCtrl {
         Router.getInstance().navigate("login.fxml", "MyStage - Login");
     }
 
-
     @FXML
     private void init_HomeCtrl_HomeCtrl() {
         String cf = UserSession.getInstance().getUtenteLoggato();
-        if (cf == null) return;
-        
+        if (cf == null)
+            return;
+
         try {
-            ResultSet rs = DBMSboundary.getInstance().queryDBMSProfiloArtista(cf);
+            ResultDto rs = ServerBoundary.getInstance().queryDBMSProfiloArtista(cf);
             if (rs != null && rs.next()) {
                 String nomeArte = rs.getString("nomeDarte");
                 if (nomeArte != null && !nomeArte.isEmpty()) {

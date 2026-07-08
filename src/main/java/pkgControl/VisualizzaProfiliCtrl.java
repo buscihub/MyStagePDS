@@ -1,7 +1,8 @@
 package pkgControl;
 
 import java.io.File;
-import java.sql.ResultSet;
+import pkgBoundary.ResultDto;
+import pkgBoundary.ServerBoundary;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.collections.FXCollections;
@@ -19,7 +20,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
-import pkgBoundary.DBMSboundary;
 import pkgTextmessage.ErrorText;
 import pkgUtility.Router;
 import pkgUtility.UserSession;
@@ -28,21 +28,28 @@ public class VisualizzaProfiliCtrl {
 
     @FXML
     public void initialize() {
-        try { init_ListaArtistiCtrl(); } catch(Exception e) { /* ignore */ }
-        try { init_ProfiloPubblicoCtrl(); } catch(Exception e) { /* ignore */ }
+        try {
+            init_ListaArtistiCtrl();
+        } catch (Exception e) {
+            /* ignore */ }
+        try {
+            init_ProfiloPubblicoCtrl();
+        } catch (Exception e) {
+            /* ignore */ }
     }
 
-@FXML
+    @FXML
     private TextField searchField;
 
     @FXML
     public void cercaProfili(ActionEvent event) {
         String keyword = searchField.getText();
-        if (keyword == null) keyword = "";
+        if (keyword == null)
+            keyword = "";
 
         List<String> risultati = new ArrayList<>();
         try {
-            ResultSet rs = DBMSboundary.getInstance().queryDBMSCercaArtista(keyword);
+            ResultDto rs = ServerBoundary.getInstance().queryDBMSCercaArtista(keyword);
             while (rs != null && rs.next()) {
                 String cf = rs.getString("codiceFiscale");
                 String nome = rs.getString("nome");
@@ -50,7 +57,7 @@ public class VisualizzaProfiliCtrl {
                 String arte = rs.getString("nomeDarte");
                 risultati.add(cf + " - " + nome + " " + cognome + " (" + arte + ")");
             }
-            
+
             if (risultati.isEmpty()) {
                 new ErrorText("Nessun artista trovato corrispondente ai criteri").okay();
             } else {
@@ -77,7 +84,7 @@ public class VisualizzaProfiliCtrl {
         }
     }
 
-@FXML
+    @FXML
     private ListView<String> profiliList;
 
     @SuppressWarnings("unchecked")
@@ -87,7 +94,7 @@ public class VisualizzaProfiliCtrl {
         if (risultati != null) {
             ObservableList<String> items = FXCollections.observableArrayList(risultati);
             profiliList.setItems(items);
-            
+
             // Custom cell per avere il bottone "Visualizza"
             profiliList.setCellFactory(param -> new ListCell<>() {
                 @Override
@@ -104,7 +111,7 @@ public class VisualizzaProfiliCtrl {
                         Button btn = new Button("Visualizza");
                         btn.setStyle("-fx-background-color: #007bff; -fx-text-fill: white; -fx-padding: 2 10 2 10;");
                         btn.setOnAction(e -> mostraDocumenti(item));
-                        
+
                         root.getChildren().addAll(lbl, spacer, btn);
                         setGraphic(root);
                     }
@@ -128,28 +135,36 @@ public class VisualizzaProfiliCtrl {
         Router.getInstance().navigate("cerca_artista.fxml", "MyStage - Cerca Artista");
     }
 
-@FXML private ImageView avatarImage;
-    @FXML private Label nomeArteLabel;
-    @FXML private Label nomeLabel;
-    @FXML private Label cognomeLabel;
-    @FXML private Label sessoLabel;
-    @FXML private Label emailLabel;
-    @FXML private Label carriereLabel;
-    @FXML private ListView<String> documentiPubbliciList;
+    @FXML
+    private ImageView avatarImage;
+    @FXML
+    private Label nomeArteLabel;
+    @FXML
+    private Label nomeLabel;
+    @FXML
+    private Label cognomeLabel;
+    @FXML
+    private Label sessoLabel;
+    @FXML
+    private Label emailLabel;
+    @FXML
+    private Label carriereLabel;
+    @FXML
+    private ListView<String> documentiPubbliciList;
 
     @FXML
     private void init_ProfiloPubblicoCtrl() {
         String cf = (String) UserSession.getInstance().retrieveFromCache("artistaDaVisualizzare");
         if (cf != null) {
             try {
-                ResultSet rs = DBMSboundary.getInstance().queryDBMSProfiloArtista(cf);
+                ResultDto rs = ServerBoundary.getInstance().queryDBMSProfiloArtista(cf);
                 if (rs != null && rs.next()) {
                     nomeArteLabel.setText(rs.getString("nomeDarte"));
                     nomeLabel.setText(rs.getString("nome"));
                     cognomeLabel.setText(rs.getString("cognome"));
                     sessoLabel.setText(rs.getString("sesso"));
                     emailLabel.setText(rs.getString("email"));
-                    
+
                     String urlImg = rs.getString("urlImmagineProfilo");
                     if (urlImg != null && !urlImg.isEmpty()) {
                         File file = new File(urlImg);
@@ -160,17 +175,18 @@ public class VisualizzaProfiliCtrl {
                 }
 
                 // Carriere
-                ResultSet rsCarriere = DBMSboundary.getInstance().queryDBMSListaCarriere(cf);
+                ResultDto rsCarriere = ServerBoundary.getInstance().queryDBMSListaCarriere(cf);
                 StringBuilder carriereStr = new StringBuilder();
                 while (rsCarriere != null && rsCarriere.next()) {
-                    if (carriereStr.length() > 0) carriereStr.append(", ");
+                    if (carriereStr.length() > 0)
+                        carriereStr.append(", ");
                     carriereStr.append(rsCarriere.getString("tipologia"))
-                               .append(" (").append(rsCarriere.getInt("anni")).append(" anni)");
+                            .append(" (").append(rsCarriere.getInt("anni")).append(" anni)");
                 }
                 carriereLabel.setText(carriereStr.toString());
 
                 // Documenti
-                ResultSet rsDocs = DBMSboundary.getInstance().queryDBMSListaDocumentiVisibili(cf);
+                ResultDto rsDocs = ServerBoundary.getInstance().queryDBMSListaDocumentiVisibili(cf);
                 while (rsDocs != null && rsDocs.next()) {
                     documentiPubbliciList.getItems().add(rsDocs.getString("percorso"));
                 }
@@ -199,7 +215,7 @@ public class VisualizzaProfiliCtrl {
         Router.getInstance().navigate("lista_artisti.fxml", "MyStage - Lista Artisti Trovati");
     }
 
-@FXML
+    @FXML
     private TextField carrieraFilterField;
 
     @FXML
@@ -225,7 +241,7 @@ public class VisualizzaProfiliCtrl {
 
         List<String> risultati = new ArrayList<>();
         try {
-            ResultSet rs = DBMSboundary.getInstance().queryDBMSFiltraArtisti(carriera.trim(), anni);
+            ResultDto rs = ServerBoundary.getInstance().queryDBMSFiltraArtisti(carriera.trim(), anni);
             while (rs != null && rs.next()) {
                 String cf = rs.getString("codiceFiscale");
                 String nome = rs.getString("nome");
@@ -233,7 +249,7 @@ public class VisualizzaProfiliCtrl {
                 String arte = rs.getString("nomeDarte");
                 risultati.add(cf + " - " + nome + " " + cognome + " (" + arte + ")");
             }
-            
+
             if (risultati.isEmpty()) {
                 new ErrorText("Nessun artista trovato corrispondente ai criteri").okay();
             } else {

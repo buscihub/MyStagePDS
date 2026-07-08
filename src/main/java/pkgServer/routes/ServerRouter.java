@@ -11,5 +11,8 @@ public class ServerRouter {
         
         // Rotta per la gestione e download dei file/documenti
         server.createContext("/files", new FileBackendController());
+        
+        // Rotta API per il Client Backend-DBMS
+        server.createContext("/api/dbms", new pkgServer.handlers.DBMSHandler());
     }
 }

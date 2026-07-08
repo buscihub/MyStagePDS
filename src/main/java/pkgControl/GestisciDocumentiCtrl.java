@@ -4,7 +4,8 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import pkgBoundary.DBMSboundary;
+import pkgBoundary.ResultDto;
+import pkgBoundary.ServerBoundary;
 import pkgEntity.DocumentoEntity;
 import pkgUtility.UserSession;
 
@@ -77,7 +78,7 @@ private String getUtenteCorrente() {
                                 java.nio.file.StandardCopyOption.REPLACE_EXISTING);
 
                         String path = "src/main/resources/images/" + file.getName();
-                        DBMSboundary.getInstance().queryDBMSInsertDocumenti(getUtenteCorrente(), visibile, path);
+                        ServerBoundary.getInstance().queryDBMSInsertDocumenti(getUtenteCorrente(), visibile, path);
                     }
 
                     new pkgTextmessage.SuccessfulText("Documenti caricati con successo!").okay();
@@ -151,7 +152,7 @@ private String getUtenteCorrente() {
         try {
             selectedDocIds.clear();
             documentiTable.getItems().clear();
-            java.sql.ResultSet rs = DBMSboundary.getInstance().queryDBMSListaDocumenti(getUtenteCorrente());
+            ResultDto rs = ServerBoundary.getInstance().queryDBMSListaDocumenti(getUtenteCorrente());
             while (rs != null && rs.next()) {
                 DocumentoEntity doc = new DocumentoEntity(
                     rs.getInt("idDocumento"),
@@ -175,7 +176,7 @@ private String getUtenteCorrente() {
         pkgTextmessage.ConfirmText conferma = new pkgTextmessage.ConfirmText("Vuoi davvero eliminare i " + selectedDocIds.size() + " documenti selezionati?");
         if (conferma.si()) {
             for (int id : selectedDocIds) {
-                DBMSboundary.getInstance().queryDBMSRemoveDocumenti(id);
+                ServerBoundary.getInstance().queryDBMSRemoveDocumenti(id);
             }
             new pkgTextmessage.SuccessfulText("Documenti eliminati con successo.").okay();
             loadDocumenti();
@@ -206,7 +207,7 @@ private String getUtenteCorrente() {
                 checkBox.setOnAction(e -> {
                     DocumentoEntity doc = getTableView().getItems().get(getIndex());
                     doc.setVisibile(checkBox.isSelected());
-                    DBMSboundary.getInstance().queryDBMSUpdateStatoDocumenti(doc.getIdDocumento(), checkBox.isSelected());
+                    ServerBoundary.getInstance().queryDBMSUpdateStatoDocumenti(doc.getIdDocumento(), checkBox.isSelected());
                 });
             }
             @Override

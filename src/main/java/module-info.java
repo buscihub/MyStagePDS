@@ -6,6 +6,8 @@ module mystage {
     requires jakarta.mail;
     requires jdk.httpserver;
     requires java.desktop;
+    requires java.net.http;
+    requires com.google.gson;
 
     exports pkgEntity;
     exports pkgBoundary;
@@ -16,4 +18,6 @@ module mystage {
     exports pkgControl;
     
     opens pkgControl to javafx.fxml;
+    opens pkgServer.handlers to com.google.gson;
+    opens pkgBoundary to com.google.gson;
 }
