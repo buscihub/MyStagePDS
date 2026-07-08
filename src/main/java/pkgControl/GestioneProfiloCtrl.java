@@ -12,13 +12,13 @@ import pkgUtility.Router;
 public class GestioneProfiloCtrl {
 
     @FXML
-    public void goToStanze(ActionEvent event) {
-        Router.getInstance().navigate("stanze.fxml", "ShareRoomAfam - Stanze");
+    public void goToHome(ActionEvent event) {
+        Router.getInstance().navigate("home.fxml", "MyStage - Home");
     }
 
     @FXML
     public void goToProfili(ActionEvent event) {
-        Router.getInstance().navigate("visualizza_profili.fxml", "ShareRoomAfam - Cerca Profili");
+        Router.getInstance().navigate("cerca_artista.fxml", "MyStage - Cerca Profili");
     }
 
     @FXML
@@ -26,7 +26,7 @@ public class GestioneProfiloCtrl {
         pkgTextmessage.ConfirmText conferma = new pkgTextmessage.ConfirmText("Vuoi davvero disconnetterti?");
         if (conferma.si()) {
             pkgUtility.UserSession.getInstance().logout();
-            Router.getInstance().navigate("login.fxml", "ShareRoomAfam - Login");
+            Router.getInstance().navigate("login.fxml", "MyStage - Login");
         }
     }
     @FXML
@@ -38,10 +38,20 @@ public class GestioneProfiloCtrl {
             new pkgTextmessage.SuccessfulText("Profilo cancellato con successo.").okay();
             pkgUtility.UserSession.getInstance().logout();
             try {
-                Router.getInstance().navigate("login.fxml", "ShareRoomAfam - Login");
+                Router.getInstance().navigate("login.fxml", "MyStage - Login");
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    @FXML
+    public void goToGestioneDatiPersonali(ActionEvent event) {
+        Router.getInstance().navigate("gestione_dati_personali.fxml", "MyStage - Gestione Dati Personali");
+    }
+
+    @FXML
+    public void goToGestisciDocumenti(ActionEvent event) {
+        Router.getInstance().navigate("gestisci_documenti.fxml", "MyStage - Gestisci Documenti");
     }
 }

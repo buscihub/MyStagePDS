@@ -41,7 +41,7 @@ public class RecuperaPasswordCtrl {
                     UserSession.getInstance().setEmailInVerifica(email.trim());
                     UserSession.getInstance().setAzioneVerifica("RECUPERO");
                     // RAD passo 6.2 — compare il form "Inserisci codice di recupero"
-                    Router.getInstance().navigate("inserisci_codice.fxml", "ShareRoomAfam - Verifica 2FA");
+                    Router.getInstance().navigate("inserisci_codice.fxml", "MyStage - Verifica 2FA");
                 } else {
                     new ErrorText("Errore durante l'invio dell'email.").okay();
                 }
@@ -57,6 +57,6 @@ public class RecuperaPasswordCtrl {
 
     @FXML
     public void handleTornaLogin(ActionEvent event) {
-        Router.getInstance().navigate("login.fxml", "ShareRoomAfam - Login");
+        Router.getInstance().navigate("login.fxml", "MyStage - Login");
     }
 }

@@ -16,7 +16,7 @@ public class Main extends Application {
         Router.getInstance().setPrimaryStage(primaryStage);
         
         // Naviga alla prima schermata
-        Router.getInstance().navigate("login.fxml", "ShareRoomAfam - Login");
+        Router.getInstance().navigate("login.fxml", "MyStage - Login");
     }
 
     @Override

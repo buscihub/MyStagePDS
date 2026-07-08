@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pkgControl.ModificaNomeStanzaCtrl" stylesheets="@../css/style.css">
+    <top>
+        <HBox spacing="20" alignment="CENTER_LEFT" style="-fx-background-color: #333333; -fx-padding: 15px;">
+            <Label text="Rinomina Stanza" style="-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;"/>
+            <Region HBox.hgrow="ALWAYS" />
+            <Button text="Torna Indietro" onAction="#goBack" styleClass="primary-button"/>
+        </HBox>
+    </top>
+    
+    <center>
+        <VBox alignment="CENTER" spacing="20.0" styleClass="main-container">
+            <padding>
+                <Insets bottom="40.0" left="40.0" right="40.0" top="40.0"/>
+            </padding>
+            <Label text="Inserisci il nuovo nome per la stanza" styleClass="title-label"/>
+            
+            <HBox spacing="10" alignment="CENTER">
+                <TextField fx:id="nuovoNomeStanzaField" promptText="Nuovo nome stanza..." prefWidth="250"/>
+                <Button text="Rinomina" onAction="#rinominaStanza" styleClass="primary-button"/>
+            </HBox>
+        </VBox>
+    </center>
+</BorderPane>

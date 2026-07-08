@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pkgControl.CampiFiltriCtrl" stylesheets="@../css/style.css">
+    <padding>
+        <Insets bottom="40.0" left="40.0" right="40.0" top="40.0"/>
+    </padding>
+
+    <Label text="Filtra per Dati Artistici" styleClass="title-label" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+    <Label text="Imposta i criteri per trovare l'artista ideale" style="-fx-font-size: 14px; -fx-text-fill: #666666;"/>
+    
+    <VBox spacing="10" alignment="CENTER_LEFT" maxWidth="400">
+        <Label text="Carriera / Specializzazione:"/>
+        <TextField fx:id="carrieraFilterField" promptText="" styleClass="input-field"/>
+        
+        <Label text="Anni di Carriera minimi:"/>
+        <TextField fx:id="anniFilterField" promptText="Es. 5" styleClass="input-field"/>
+        
+        <Region prefHeight="10"/>
+        
+        <Button text="Filtra" onAction="#filtraProfili" style="-fx-background-color: #28a745; -fx-text-fill: white;" prefWidth="400"/>
+        <Button text="Annulla" onAction="#goBack" style="-fx-background-color: #e0e0e0; -fx-text-fill: black;" prefWidth="400"/>
+    </VBox>
+</VBox>

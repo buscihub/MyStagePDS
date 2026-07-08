@@ -1,195 +1,33 @@
 package pkgControl;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
-import pkgBoundary.DBMSboundary;
-import pkgEntity.DocumentoEntity;
-import pkgEntity.DocumentoStanzaDto;
-import pkgUtility.Router;
-import pkgUtility.UserSession;
-import pkgTextmessage.ErrorText;
-import pkgTextmessage.SuccessfulText;
 
-import java.net.URL;
-import java.sql.ResultSet;
-import java.util.ResourceBundle;
+public class ModificaStanzaCtrl {
 
-public class ModificaStanzaCtrl implements Initializable {
-
-    @FXML private TableView<DocumentoEntity> documentiDisponibiliTable;
-    @FXML private TableColumn<DocumentoEntity, String> colNomeDisponibile;
-    @FXML private TableColumn<DocumentoEntity, Void> colAggiungi;
-
-    @FXML private TableView<DocumentoStanzaDto> documentiStanzaTable;
-    @FXML private TableColumn<DocumentoStanzaDto, String> colNomeStanza;
-    @FXML private TableColumn<DocumentoStanzaDto, Void> colScaricabile;
-    @FXML private TableColumn<DocumentoStanzaDto, Void> colRimuovi;
-
-    @FXML private Label titoloLabel;
-    @FXML private TextField nuovoNomeStanzaField;
-
-    private ObservableList<DocumentoEntity> documentiDisponibiliList = FXCollections.observableArrayList();
-    private ObservableList<DocumentoStanzaDto> documentiStanzaList = FXCollections.observableArrayList();
-
-    private Integer idStanzaCorrente;
-
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        idStanzaCorrente = UserSession.getInstance().getStanzaSelezionata();
-        if (idStanzaCorrente == null) {
-            goToStanze(null);
-            return;
-        }
-
-        colNomeDisponibile.setCellValueFactory(new PropertyValueFactory<>("percorso"));
-        colNomeStanza.setCellValueFactory(new PropertyValueFactory<>("percorso"));
-
-        setupDisponibiliColumns();
-        setupStanzaColumns();
-
-        caricaDati();
-    }
-
-    private void setupDisponibiliColumns() {
-        colAggiungi.setCellFactory(param -> new TableCell<>() {
-            private final Button btn = new Button("Aggiungi");
-            {
-                btn.setOnAction(event -> {
-                    DocumentoEntity doc = getTableView().getItems().get(getIndex());
-                    aggiungiDocumento(doc);
-                });
-            }
-            @Override
-            protected void updateItem(Void item, boolean empty) {
-                super.updateItem(item, empty);
-                setGraphic(empty ? null : btn);
-            }
-        });
-    }
-
-    private void setupStanzaColumns() {
-        colScaricabile.setCellFactory(param -> new TableCell<>() {
-            private final CheckBox chk = new CheckBox();
-            {
-                chk.setOnAction(event -> {
-                    DocumentoStanzaDto doc = getTableView().getItems().get(getIndex());
-                    aggiornaScaricabile(doc, chk.isSelected());
-                });
-            }
-            @Override
-            protected void updateItem(Void item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty) {
-                    setGraphic(null);
-                } else {
-                    DocumentoStanzaDto doc = getTableView().getItems().get(getIndex());
-                    chk.setSelected(doc.isScaricabile());
-                    setGraphic(chk);
-                }
-            }
-        });
-
-        colRimuovi.setCellFactory(param -> new TableCell<>() {
-            private final Button btn = new Button("Rimuovi");
-            {
-                btn.setOnAction(event -> {
-                    DocumentoStanzaDto doc = getTableView().getItems().get(getIndex());
-                    rimuoviDocumento(doc);
-                });
-            }
-            @Override
-            protected void updateItem(Void item, boolean empty) {
-                super.updateItem(item, empty);
-                setGraphic(empty ? null : btn);
-            }
-        });
-    }
-
-    private void caricaDati() {
-        documentiDisponibiliList.clear();
-        documentiStanzaList.clear();
-        String cf = UserSession.getInstance().getUtenteLoggato();
-
-        try {
-            // Documenti NON in stanza
-            ResultSet rsDisp = DBMSboundary.getInstance().queryDocumentiNonInStanza(idStanzaCorrente, cf);
-            while (rsDisp != null && rsDisp.next()) {
-                documentiDisponibiliList.add(new DocumentoEntity(
-                        rsDisp.getInt("idDocumento"),
-                        rsDisp.getString("codiceFiscaleArtist"),
-                        rsDisp.getBoolean("visibile"),
-                        rsDisp.getString("percorso")
-                ));
-            }
-            documentiDisponibiliTable.setItems(documentiDisponibiliList);
-
-            // Documenti IN stanza
-            ResultSet rsStanza = DBMSboundary.getInstance().queryDBMSListaDocumentiStanza(idStanzaCorrente);
-            while (rsStanza != null && rsStanza.next()) {
-                documentiStanzaList.add(new DocumentoStanzaDto(
-                        rsStanza.getInt("idDocumento"),
-                        rsStanza.getString("codiceFiscaleArtist"),
-                        rsStanza.getBoolean("visibile"),
-                        rsStanza.getString("percorso"),
-                        rsStanza.getBoolean("scaricabile")
-                ));
-            }
-            documentiStanzaTable.setItems(documentiStanzaList);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void aggiungiDocumento(DocumentoEntity doc) {
-        DBMSboundary.getInstance().insertDocumentiDBMSStanza(idStanzaCorrente, doc.getIdDocumento(), false);
-        caricaDati();
-    }
-
-    private void rimuoviDocumento(DocumentoStanzaDto doc) {
-        pkgTextmessage.ConfirmText conferma = new pkgTextmessage.ConfirmText("Vuoi davvero rimuovere questo documento dalla stanza?");
-        if (conferma.si()) {
-            DBMSboundary.getInstance().queryDBMSRemoveDocumentiStanza(idStanzaCorrente, doc.getIdDocumento());
-            caricaDati();
-        }
-    }
-
-    private void aggiornaScaricabile(DocumentoStanzaDto doc, boolean scaricabile) {
-        DBMSboundary.getInstance().queryDBMSUpdateScaricabiliENonScaricabiliDocumentiStanza(idStanzaCorrente, doc.getIdDocumento(), scaricabile);
-        doc.setScaricabile(scaricabile); // update UI model
+    @FXML
+    public void goToModificaNome(ActionEvent event) {
+        pkgUtility.Router.getInstance().navigate("modifica_nome_stanza.fxml", "MyStage - Modifica Nome Stanza");
     }
 
     @FXML
-    public void rinominaStanza(ActionEvent event) {
-        String nuovoNome = nuovoNomeStanzaField.getText();
-        if (nuovoNome == null || nuovoNome.trim().isEmpty()) {
-            new ErrorText("Inserisci un nuovo nome valido").okay();
-            return;
-        }
-        
-        String cf = UserSession.getInstance().getUtenteLoggato();
-        if (DBMSboundary.getInstance().queryDBMSVerificaNomeStanza(cf, nuovoNome)) {
-            new ErrorText("Hai già una stanza con questo nome.").okay();
-            return;
-        }
-        
-        int res = DBMSboundary.getInstance().updateDBMSNomeStanza(idStanzaCorrente, nuovoNome);
-        if (res > 0) {
-            new SuccessfulText("Stanza rinominata con successo!").okay();
-            nuovoNomeStanzaField.clear();
-        } else {
-            new ErrorText("Errore durante l'aggiornamento.").okay();
-        }
+    public void goToAggiungiDocumenti(ActionEvent event) {
+        pkgUtility.Router.getInstance().navigate("aggiungi_doc_stanza.fxml", "MyStage - Aggiungi Documenti Stanza");
+    }
+
+    @FXML
+    public void goToRimuoviDocumenti(ActionEvent event) {
+        pkgUtility.Router.getInstance().navigate("rimuovi_doc_stanza.fxml", "MyStage - Rimuovi Documenti Stanza");
+    }
+
+    @FXML
+    public void goToPermessiDocumenti(ActionEvent event) {
+        pkgUtility.Router.getInstance().navigate("permessi_doc_stanza.fxml", "MyStage - Permessi Documenti Stanza");
     }
 
     @FXML
     public void goToStanze(ActionEvent event) {
-        UserSession.getInstance().setStanzaSelezionata(null);
-        Router.getInstance().navigate("stanze.fxml", "ShareRoomAfam - Gestione Stanze");
+        pkgUtility.UserSession.getInstance().setStanzaSelezionata(null);
+        pkgUtility.Router.getInstance().navigate("stanze.fxml", "MyStage - Gestione Stanze");
     }
 }

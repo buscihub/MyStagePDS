@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pkgControl.InserisciDatiCarrieraCtrl" stylesheets="@../css/style.css">
+    <padding>
+        <Insets bottom="40.0" left="40.0" right="40.0" top="40.0"/>
+    </padding>
+
+    <Label text="Aggiungi Carriera" styleClass="title-label" style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+    
+    <VBox spacing="10" alignment="CENTER" maxWidth="300">
+        <VBox spacing="5" alignment="CENTER_LEFT">
+            <Label text="Inserisci carriera:" style="-fx-font-size: 12px;"/>
+            <TextField fx:id="nuovaCarrieraField" styleClass="input-field" prefWidth="300"/>
+        </VBox>
+        <VBox spacing="5" alignment="CENTER_LEFT">
+            <Label text="Inserisci anni di carriera:" style="-fx-font-size: 12px;"/>
+            <TextField fx:id="anniCarrieraField" promptText="Es. 5" styleClass="input-field" prefWidth="300"/>
+        </VBox>
+        <Region prefHeight="10"/>
+        <Button text="Salva modifiche" onAction="#salvaModifiche" styleClass="primary-button" prefWidth="300"/>
+        <Button text="Annulla" onAction="#annulla" styleClass="secondary-button" prefWidth="300"/>
+    </VBox>
+</VBox>

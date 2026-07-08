@@ -159,7 +159,7 @@ public class DBMSboundary {
             int res = ps.executeUpdate();
             
             if (res > 0 && carriera != null && !carriera.trim().isEmpty()) {
-                String queryCarriera = "INSERT INTO CARRIERA (codiceFiscaleArtist, tipologia, anniDiEsperienza) VALUES (?, ?, ?)";
+                String queryCarriera = "INSERT INTO CARRIERA (codiceFiscaleArtist, tipologia, anni) VALUES (?, ?, ?)";
                 PreparedStatement ps2 = getConnection().prepareStatement(queryCarriera);
                 ps2.setString(1, codiceFiscale);
                 ps2.setString(2, carriera);
@@ -477,9 +477,24 @@ public class DBMSboundary {
 
     public ResultSet queryDBMSStanzaByLink(String link) {
         try {
-            String query = "SELECT * FROM STANZA WHERE link = ?";
+            String strippedLink = link.replaceFirst("^https?://", "");
+            String query = "SELECT * FROM STANZA WHERE link = ? OR link = ? OR link LIKE ?";
             PreparedStatement ps = getConnection().prepareStatement(query);
             ps.setString(1, link);
+            ps.setString(2, strippedLink);
+            ps.setString(3, "%" + strippedLink);
+            return ps.executeQuery();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public ResultSet queryDBMSStanzaById(int idStanza) {
+        try {
+            String query = "SELECT * FROM STANZA WHERE idStanza = ?";
+            PreparedStatement ps = getConnection().prepareStatement(query);
+            ps.setInt(1, idStanza);
             return ps.executeQuery();
         } catch (SQLException e) {
             e.printStackTrace();

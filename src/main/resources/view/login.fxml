@@ -9,7 +9,7 @@
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
     </padding>
 
-    <Label text="ShareRoomAfam" styleClass="title-label"/>
+    <Label text="MyStage" styleClass="title-label"/>
     
     <VBox spacing="10.0" maxWidth="300">
         <Label text="Email"/>
@@ -30,7 +30,8 @@
     
     <Label text="Sei uno Scouter?" style="-fx-font-weight: bold;"/>
     <HBox spacing="10" alignment="CENTER" maxWidth="400">
-        <TextField fx:id="linkStanzaField" promptText="Es. shareroom.com/1234abcd" HBox.hgrow="ALWAYS" styleClass="input-field"/>
+        <TextField fx:id="linkStanzaField" promptText="Es. mystage.com/1234abcd" HBox.hgrow="ALWAYS" styleClass="input-field"/>
         <Button text="Vai alla Stanza" onAction="#handleGuestLogin" styleClass="secondary-button"/>
+        <Button text="Visualizza profili" onAction="#cercaArtistiGuest" styleClass="secondary-button"/>
     </HBox>
 </VBox>

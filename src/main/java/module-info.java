@@ -1,4 +1,4 @@
-module shareroomafam {
+module mystage {
     requires transitive java.sql;
     requires transitive javafx.controls;
     requires transitive javafx.graphics;

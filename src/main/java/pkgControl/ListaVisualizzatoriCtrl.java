@@ -80,13 +80,13 @@ public class ListaVisualizzatoriCtrl implements Initializable {
 
     @FXML
     public void goToProfilo(ActionEvent event) {
-        Router.getInstance().navigate("profilo.fxml", "ShareRoomAfam - Profilo");
+        Router.getInstance().navigate("profilo.fxml", "MyStage - Profilo");
     }
 
     @FXML
     public void goToStanze(ActionEvent event) {
         UserSession.getInstance().setStanzaSelezionata(null);
-        Router.getInstance().navigate("stanze.fxml", "ShareRoomAfam - Gestione Stanze");
+        Router.getInstance().navigate("stanze.fxml", "MyStage - Gestione Stanze");
     }
 
     @FXML
@@ -94,7 +94,7 @@ public class ListaVisualizzatoriCtrl implements Initializable {
         pkgTextmessage.ConfirmText conferma = new pkgTextmessage.ConfirmText("Vuoi davvero disconnetterti?");
         if (conferma.si()) {
             UserSession.getInstance().logout();
-            Router.getInstance().navigate("login.fxml", "ShareRoomAfam - Login");
+            Router.getInstance().navigate("login.fxml", "MyStage - Login");
         }
     }
 }

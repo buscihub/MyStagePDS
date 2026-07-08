@@ -1,13 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.image.ImageView?>
+<?import javafx.geometry.Insets?>
 
-<VBox spacing="15" alignment="CENTER" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pkgControl.ModificaImmagineProfiloCtrl">
-    <Label text="Immagine Profilo" style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
-    <ImageView fx:id="avatarImageView" fitWidth="100" fitHeight="100" />
-    <HBox spacing="10" alignment="CENTER">
-        <Button text="Carica" onAction="#caricaAvatar" styleClass="secondary-button"/>
-        <Button text="Rimuovi" onAction="#rimuoviAvatar" styleClass="secondary-button"/>
-    </HBox>
+<VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pkgControl.ModificaImmagineProfiloCtrl" stylesheets="@../css/style.css">
+    <padding>
+        <Insets bottom="40.0" left="40.0" right="40.0" top="40.0"/>
+    </padding>
+
+    <Label text="Modifica Immagine Profilo" styleClass="title-label" style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+    <Label text="Gestisci la foto associata al tuo account" style="-fx-font-size: 14px; -fx-text-fill: #666666;"/>
+    
+    <VBox spacing="10" alignment="CENTER" maxWidth="300">
+        <Button text="Aggiungi immagine" onAction="#caricaAvatar" styleClass="primary-button" prefWidth="300"/>
+        <Button text="Rimuovi immagine" onAction="#rimuoviAvatar" style="-fx-text-fill: red; -fx-background-color: transparent; -fx-border-color: red; -fx-border-radius: 5px; -fx-padding: 8px;" prefWidth="300"/>
+        <Region prefHeight="10"/>
+        <Button text="Torna Indietro" onAction="#goBack" styleClass="secondary-button" prefWidth="300"/>
+    </VBox>
 </VBox>

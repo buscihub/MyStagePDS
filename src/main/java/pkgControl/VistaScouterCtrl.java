@@ -8,6 +8,9 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
 import pkgBoundary.DBMSboundary;
@@ -25,6 +28,12 @@ public class VistaScouterCtrl implements Initializable {
     @FXML private TableView<DocumentoStanzaDto> documentiTable;
     @FXML private TableColumn<DocumentoStanzaDto, String> colNomeFile;
     @FXML private TableColumn<DocumentoStanzaDto, Void> colAzioni;
+    
+    @FXML private ImageView imgProfilo;
+    @FXML private Label nomeLabel;
+    @FXML private Label dataNascitaLabel;
+    @FXML private Label emailLabel;
+    @FXML private VBox carriereContainer;
 
     private final ObservableList<DocumentoStanzaDto> documentiList = FXCollections.observableArrayList();
     private Integer idStanzaCorrente;
@@ -85,10 +94,55 @@ public class VistaScouterCtrl implements Initializable {
     private void caricaDati() {
         documentiList.clear();
         try {
-            // Ottenere i dettagli della stanza per il titolo
-            // Since we don't have a direct query for Stanza by ID that returns ResultSet easily, we can just use "Stanza"
-            // Wait, we can do a simple query or just leave a generic title
-            titoloStanzaLabel.setText("Contenuto della Stanza Condivisa");
+            // Ottieni info della stanza e dell'artista
+            ResultSet rsStanza = DBMSboundary.getInstance().queryDBMSStanzaById(idStanzaCorrente);
+            if (rsStanza != null && rsStanza.next()) {
+                String nomeStanza = rsStanza.getString("nomeStanza");
+                String cfArtista = rsStanza.getString("codiceFiscaleArtist");
+                titoloStanzaLabel.setText(nomeStanza);
+
+                ResultSet rsArtista = DBMSboundary.getInstance().queryDBMSProfiloArtista(cfArtista);
+                if (rsArtista != null && rsArtista.next()) {
+                    String nome = rsArtista.getString("nome");
+                    String cognome = rsArtista.getString("cognome");
+                    String nomeDarte = rsArtista.getString("nomeDarte");
+                    String urlImg = rsArtista.getString("urlImmagineProfilo");
+                    String dataNascita = rsArtista.getString("dataDiNascita");
+                    String email = rsArtista.getString("email");
+
+                    String nameToDisplay = (nomeDarte != null && !nomeDarte.isEmpty()) ? nomeDarte : nome + " " + cognome;
+                    nomeLabel.setText(nameToDisplay);
+                    
+                    if (dataNascita != null && !dataNascita.isEmpty()) {
+                        dataNascitaLabel.setText(dataNascita.split(" ")[0]);
+                    } else {
+                        dataNascitaLabel.setText("ND");
+                    }
+                    
+                    emailLabel.setText(email != null ? email : "ND");
+
+                    carriereContainer.getChildren().clear();
+                    ResultSet rsCarriera = DBMSboundary.getInstance().queryDBMSListaCarriere(cfArtista);
+                    while (rsCarriera != null && rsCarriera.next()) {
+                        String tipo = rsCarriera.getString("tipologia");
+                        int anni = rsCarriera.getInt("anni");
+                        Label l = new Label("• " + tipo + " (" + anni + " anni)");
+                        l.setStyle("-fx-text-fill: #555555; -fx-font-size: 14px;");
+                        carriereContainer.getChildren().add(l);
+                    }
+
+                    try {
+                        if (urlImg != null && !urlImg.isEmpty()) {
+                            Image img = new Image("file:" + urlImg, true);
+                            imgProfilo.setImage(img);
+                        } else {
+                            imgProfilo.setImage(new Image(getClass().getResourceAsStream("/images/default_profile.png")));
+                        }
+                    } catch (Exception e) {
+                        System.err.println("Immagine profilo non trovata: " + urlImg);
+                    }
+                }
+            }
 
             ResultSet rs = DBMSboundary.getInstance().queryDBMSListaDocumentiStanza(idStanzaCorrente);
             while (rs != null && rs.next()) {
@@ -154,6 +208,6 @@ public class VistaScouterCtrl implements Initializable {
     @FXML
     public void handleEsci(ActionEvent event) {
         UserSession.getInstance().setStanzaSelezionata(null);
-        Router.getInstance().navigate("login.fxml", "ShareRoomAfam - Login");
+        Router.getInstance().navigate("login.fxml", "MyStage - Login");
     }
 }

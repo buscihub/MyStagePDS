@@ -4,25 +4,21 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 
-<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pkgControl.GestioneProfiloCtrl" stylesheets="@../css/style.css">
-    <top>
-        <HBox spacing="20" alignment="CENTER_LEFT" style="-fx-background-color: #333333; -fx-padding: 15px;">
-            <Label text="ShareRoomAfam" style="-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;"/>
-            <Region HBox.hgrow="ALWAYS" />
-            <Button text="Stanze" onAction="#goToStanze" styleClass="primary-button"/>
-            <Button text="Cerca Profili" onAction="#goToProfili" styleClass="primary-button"/>
-            <Button text="Logout" onAction="#doLogout" style="-fx-background-color: #dc3545; -fx-text-fill: white; -fx-border-radius: 5px; -fx-background-radius: 5px; -fx-padding: 8px 15px;"/>
-            <Button text="Cancella Profilo" onAction="#cancellaProfilo" style="-fx-background-color: #8b0000; -fx-text-fill: white; -fx-border-radius: 5px; -fx-background-radius: 5px; -fx-padding: 8px 15px;"/>
-        </HBox>
-    </top>
-    
-        <TabPane tabClosingPolicy="UNAVAILABLE" styleClass="main-container">
-            <Tab text="I Miei Documenti">
-                <fx:include source="gestisci_documenti.fxml"/>
-            </Tab>
+<VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pkgControl.GestioneProfiloCtrl" stylesheets="@../css/style.css">
+    <padding>
+        <Insets bottom="40.0" left="40.0" right="40.0" top="40.0"/>
+    </padding>
 
-            <Tab text="Gestione Dati Personali">
-                <fx:include source="gestione_dati_personali.fxml"/>
-            </Tab>
-        </TabPane>
-</BorderPane>
+    <Label text="Gestione Profilo" styleClass="title-label" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+    <Label text="Seleziona l'operazione desiderata" style="-fx-font-size: 14px; -fx-text-fill: #666666;"/>
+    
+    <VBox spacing="10" alignment="CENTER" maxWidth="300">
+        <Button text="Gestione dati personali" onAction="#goToGestioneDatiPersonali" styleClass="secondary-button" prefWidth="300"/>
+        <Button text="Gestisci documenti" onAction="#goToGestisciDocumenti" styleClass="secondary-button" prefWidth="300"/>
+        <Region prefHeight="10"/>
+        <Button text="Cancella profilo" onAction="#cancellaProfilo" style="-fx-text-fill: red; -fx-background-color: transparent; -fx-border-color: red; -fx-border-radius: 5px; -fx-padding: 8px;" prefWidth="300"/>
+        <Button text="Disconnetti profilo" onAction="#doLogout" styleClass="primary-button" style="-fx-background-color: #555555;" prefWidth="300"/>
+        <Region prefHeight="10"/>
+        <Button text="Torna alla Home" onAction="#goToHome" styleClass="secondary-button" prefWidth="300"/>
+    </VBox>
+</VBox>

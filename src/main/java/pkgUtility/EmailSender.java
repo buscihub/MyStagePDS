@@ -36,12 +36,10 @@ public class EmailSender {
             // To avoid crash if credentials are wrong, we catch AuthenticationFailedException
             // Transport.send(message); // Uncomment to really send
             
-            System.out.println("\n=======================================================");
-            System.out.println(" 🚨 SIMULAZIONE INVIO EMAIL 2FA 🚨");
-            System.out.println("=======================================================");
-            System.out.println("Destinatario: " + emailDestinatario);
-            System.out.println("Codice OTP:   " + codiceGenerato);
-            System.out.println("=======================================================\n");
+            // Simulazione tramite pop-up visivo
+            javafx.application.Platform.runLater(() -> {
+                new pkgTextmessage.SuccessfulText("SIMULAZIONE EMAIL 2FA\nDestinatario: " + emailDestinatario + "\n\nCodice OTP: " + codiceGenerato).okay();
+            });
 
             return true;
         } catch (Exception mex) {

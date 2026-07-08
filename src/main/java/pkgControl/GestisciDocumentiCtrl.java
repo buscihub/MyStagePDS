@@ -11,85 +11,8 @@ import pkgBoundary.DBMSboundary;
 
 public class GestisciDocumentiCtrl {
 
-    @FXML
-    private Label nomeArteLabel;
-
-    @FXML
-    private TableView<DocumentoEntity> documentiTable;
-
-    @FXML
-    private TableColumn<DocumentoEntity, String> percorsoCol;
-
-    @FXML
-    private TableColumn<DocumentoEntity, Boolean> visibileCol;
-
-    @FXML
-    private TableColumn<DocumentoEntity, Void> azioneCol;
-
     private String getUtenteCorrente() {
         return UserSession.getInstance().getUtenteLoggato();
-    }
-
-    @FXML
-    public void initialize() {
-        percorsoCol.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("percorso"));
-        
-        visibileCol.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("visibile"));
-        visibileCol.setCellFactory(col -> new javafx.scene.control.TableCell<>() {
-            private final javafx.scene.control.CheckBox checkBox = new javafx.scene.control.CheckBox();
-            {
-                checkBox.setOnAction(e -> {
-                    DocumentoEntity doc = getTableView().getItems().get(getIndex());
-                    doc.setVisibile(checkBox.isSelected());
-                    DBMSboundary.getInstance().queryDBMSUpdateStatoDocumenti(doc.getIdDocumento(), checkBox.isSelected());
-                });
-            }
-            @Override
-            protected void updateItem(Boolean item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty) {
-                    setGraphic(null);
-                } else {
-                    checkBox.setSelected(item);
-                    setGraphic(checkBox);
-                }
-            }
-        });
-
-        azioneCol.setCellFactory(col -> new javafx.scene.control.TableCell<>() {
-            private final javafx.scene.control.Button btn = new javafx.scene.control.Button("Elimina");
-            {
-                btn.setStyle("-fx-background-color: #dc3545; -fx-text-fill: white;");
-                btn.setOnAction(e -> {
-                    DocumentoEntity doc = getTableView().getItems().get(getIndex());
-                    pkgTextmessage.ConfirmText conferma = new pkgTextmessage.ConfirmText("Vuoi davvero eliminare questo documento?");
-                    if (conferma.si()) {
-                        DBMSboundary.getInstance().queryDBMSRemoveDocumenti(doc.getIdDocumento());
-                        loadDocumenti();
-                    }
-                });
-            }
-            @Override
-            protected void updateItem(Void item, boolean empty) {
-                super.updateItem(item, empty);
-                setGraphic(empty ? null : btn);
-            }
-        });
-
-        loadDocumenti();
-        loadProfilo();
-    }
-
-    private void loadProfilo() {
-        try {
-            java.sql.ResultSet rs = DBMSboundary.getInstance().queryDBMSProfiloArtista(getUtenteCorrente());
-            if (rs != null && rs.next()) {
-                String nomeArte = rs.getString("nomeDarte");
-                nomeArteLabel.setText(nomeArte != null ? nomeArte : "");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     @FXML
@@ -147,8 +70,6 @@ public class GestisciDocumentiCtrl {
                         DBMSboundary.getInstance().queryDBMSInsertDocumenti(getUtenteCorrente(), visibile, path);
                     }
                     
-                    loadDocumenti();
-                    
                     new pkgTextmessage.SuccessfulText("Documenti caricati con successo!").okay();
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -157,21 +78,18 @@ public class GestisciDocumentiCtrl {
         }
     }
 
-    private void loadDocumenti() {
-        try {
-            documentiTable.getItems().clear();
-            java.sql.ResultSet rs = DBMSboundary.getInstance().queryDBMSListaDocumenti(getUtenteCorrente());
-            while (rs != null && rs.next()) {
-                DocumentoEntity doc = new DocumentoEntity(
-                    rs.getInt("idDocumento"),
-                    rs.getString("codiceFiscaleArtist"),
-                    rs.getBoolean("visibile"),
-                    rs.getString("percorso")
-                );
-                documentiTable.getItems().add(doc);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    @FXML
+    public void goToEliminaDocumenti(ActionEvent event) {
+        pkgUtility.Router.getInstance().navigate("elimina_documenti.fxml", "MyStage - Elimina Documenti");
+    }
+
+    @FXML
+    public void goToCambiaStato(ActionEvent event) {
+        pkgUtility.Router.getInstance().navigate("cambia_stato_documenti.fxml", "MyStage - Cambia Stato Documenti");
+    }
+
+    @FXML
+    public void goBack(ActionEvent event) {
+        pkgUtility.Router.getInstance().navigate("profilo.fxml", "MyStage - Profilo");
     }
 }

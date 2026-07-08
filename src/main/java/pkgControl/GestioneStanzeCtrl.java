@@ -77,7 +77,7 @@ public class GestioneStanzeCtrl implements Initializable {
 
     private void vediStatistiche(StanzaEntity stanza) {
         UserSession.getInstance().setStanzaSelezionata(stanza.getIdStanza());
-        Router.getInstance().navigate("lista_visualizzatori.fxml", "ShareRoomAfam - Statistiche Stanza");
+        Router.getInstance().navigate("lista_visualizzatori.fxml", "MyStage - Statistiche Stanza");
     }
 
     private void caricaStanze() {
@@ -189,7 +189,7 @@ public class GestioneStanzeCtrl implements Initializable {
         java.util.Optional<java.util.List<javafx.util.Pair<Integer, Boolean>>> result = dialog.showAndWait();
         
         result.ifPresent(selections -> {
-            String link = "shareroom.com/" + UUID.randomUUID().toString().substring(0, 8);
+            String link = "mystage.com/" + UUID.randomUUID().toString().substring(0, 8);
             try {
                 ResultSet rs = DBMSboundary.getInstance().insertDBMSStanza(cf, nome, link);
                 if (rs != null && rs.next()) {
@@ -245,7 +245,7 @@ public class GestioneStanzeCtrl implements Initializable {
 
     private void gestisciStanza(StanzaEntity stanza) {
         UserSession.getInstance().setStanzaSelezionata(stanza.getIdStanza());
-        Router.getInstance().navigate("modifica_stanza.fxml", "ShareRoomAfam - Gestisci Documenti Stanza");
+        Router.getInstance().navigate("modifica_stanza.fxml", "MyStage - Gestisci Documenti Stanza");
     }
 
     private void eliminaStanza(StanzaEntity stanza) {
@@ -262,7 +262,7 @@ public class GestioneStanzeCtrl implements Initializable {
     }
 
     @FXML
-    public void goToProfilo(ActionEvent event) {
-        Router.getInstance().navigate("profilo.fxml", "ShareRoomAfam - Profilo");
+    public void goToHome(ActionEvent event) {
+        Router.getInstance().navigate("home.fxml", "MyStage - Home");
     }
 }

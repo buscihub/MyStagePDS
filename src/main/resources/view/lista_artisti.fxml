@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pkgControl.ListaArtistiCtrl" stylesheets="@../css/style.css">
+    <padding>
+        <Insets bottom="40.0" left="40.0" right="40.0" top="40.0"/>
+    </padding>
+
+    <Label text="Lista Artisti Trovati" styleClass="title-label" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+    
+    <VBox spacing="10" alignment="CENTER" maxWidth="500">
+        <ListView fx:id="profiliList" prefHeight="300" prefWidth="500" />
+        
+        <Region prefHeight="10"/>
+        
+        <Button text="Nuova Ricerca" onAction="#nuovaRicerca" styleClass="primary-button" prefWidth="500"/>
+    </VBox>
+</VBox>

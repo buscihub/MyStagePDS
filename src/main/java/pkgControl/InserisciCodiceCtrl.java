@@ -32,13 +32,13 @@ public class InserisciCodiceCtrl {
 
                 if ("LOGIN".equals(azione)) {
                     UserSession.getInstance().setUtenteLoggato(cf);
-                    Router.getInstance().navigate("profilo.fxml", "ShareRoomAfam - Profilo");
+                    Router.getInstance().navigate("home.fxml", "MyStage - Home Artista");
                 } else if ("RECUPERO".equals(azione)) {
                     // RAD rcpr_pswd step 6.5: mostra la password corrente e reindirizza al login
                     String currentPassword = rs.getString("password");
                     new pkgTextmessage.SuccessfulText("La tua password corrente è: " + currentPassword
                             + "\nAccedi e cambiala subito dal pannello Gestione Profilo.").okay();
-                    Router.getInstance().navigate("login.fxml", "ShareRoomAfam - Login");
+                    Router.getInstance().navigate("login.fxml", "MyStage - Login");
                 }
             } else {
                 if ("LOGIN".equals(azione)) {
@@ -57,6 +57,6 @@ public class InserisciCodiceCtrl {
 
     @FXML
     public void handleTornaIndietro(ActionEvent event) {
-        Router.getInstance().navigate("login.fxml", "ShareRoomAfam - Login");
+        Router.getInstance().navigate("login.fxml", "MyStage - Login");
     }
 }

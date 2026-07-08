@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pkgControl.CercaArtistaCtrl" stylesheets="@../css/style.css">
+    <padding>
+        <Insets bottom="40.0" left="40.0" right="40.0" top="40.0"/>
+    </padding>
+
+    <Label text="Cerca Artista" styleClass="title-label" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+    <Label text="Cerca per nome d'arte, nome o cognome" style="-fx-font-size: 14px; -fx-text-fill: #666666;"/>
+    
+    <VBox spacing="10" alignment="CENTER" maxWidth="400">
+        <HBox spacing="10" alignment="CENTER">
+            <TextField fx:id="searchField" promptText="" HBox.hgrow="ALWAYS" styleClass="input-field"/>
+            <Button text="Filtra (0)" onAction="#goToFiltri" style="-fx-background-color: #888888; -fx-text-fill: white; -fx-border-radius: 5px;"/>
+        </HBox>
+        <Button text="Cerca" onAction="#cercaProfili" styleClass="primary-button" prefWidth="400"/>
+        <Region prefHeight="10"/>
+        <Button text="Torna Indietro" onAction="#goBack" styleClass="secondary-button" prefWidth="400" style="-fx-background-color: transparent; -fx-border-color: #888888; -fx-text-fill: #888888;"/>
+    </VBox>
+</VBox>

@@ -102,7 +102,7 @@ public class AuthCtrl {
                 if (sent) {
                     UserSession.getInstance().setEmailInVerifica(email);
                     UserSession.getInstance().setAzioneVerifica("LOGIN");
-                    Router.getInstance().navigate("inserisci_codice.fxml", "ShareRoomAfam - Verifica 2FA");
+                    Router.getInstance().navigate("inserisci_codice.fxml", "MyStage - Verifica 2FA");
                 } else {
                     new ErrorText("Errore durante l'invio dell'email per l'OTP.").okay();
                 }
@@ -116,12 +116,12 @@ public class AuthCtrl {
 
     @FXML
     public void goToRegistrazione(ActionEvent event) {
-        Router.getInstance().navigate("registrazione.fxml", "ShareRoomAfam - Registrazione");
+        Router.getInstance().navigate("registrazione.fxml", "MyStage - Registrazione");
     }
 
     @FXML
     public void goToLogin(ActionEvent event) {
-        Router.getInstance().navigate("login.fxml", "ShareRoomAfam - Login");
+        Router.getInstance().navigate("login.fxml", "MyStage - Login");
     }
 
     @FXML
@@ -144,7 +144,7 @@ public class AuthCtrl {
             
             salvaCacheRegistrazione(email, password, nome, cognome, cf, nomeDarte, carriera, anniCarrieraStr, dataNascita, sesso);
             new ErrorText("Compilare tutti i campi obbligatori.").okay();
-            Router.getInstance().navigate("registrazione.fxml", "ShareRoomAfam - Registrazione");
+            Router.getInstance().navigate("registrazione.fxml", "MyStage - Registrazione");
             return;
         }
 
@@ -156,7 +156,7 @@ public class AuthCtrl {
         } catch (NumberFormatException e) {
             salvaCacheRegistrazione(email, password, nome, cognome, cf, nomeDarte, carriera, anniCarrieraStr, dataNascita, sesso);
             new ErrorText("Gli anni di carriera devono essere un numero intero.").okay();
-            Router.getInstance().navigate("registrazione.fxml", "ShareRoomAfam - Registrazione");
+            Router.getInstance().navigate("registrazione.fxml", "MyStage - Registrazione");
             return;
         }
 
@@ -165,7 +165,7 @@ public class AuthCtrl {
             if (rs != null && rs.next()) {
                 salvaCacheRegistrazione(email, password, nome, cognome, cf, nomeDarte, carriera, String.valueOf(anniCarriera), dataNascita, sesso);
                 new ErrorText("Registrazione fallita").okay();
-                Router.getInstance().navigate("registrazione.fxml", "ShareRoomAfam - Registrazione");
+                Router.getInstance().navigate("registrazione.fxml", "MyStage - Registrazione");
                 return;
             }
 
@@ -173,11 +173,11 @@ public class AuthCtrl {
             if (res > 0) {
                 new SuccessfulText("Registrazione effettuata con successo!").okay();
                 pkgUtility.UserSession.getInstance().clearCache("registrazione_form");
-                Router.getInstance().navigate("login.fxml", "ShareRoomAfam - Login");
+                Router.getInstance().navigate("login.fxml", "MyStage - Login");
             } else {
                 salvaCacheRegistrazione(email, password, nome, cognome, cf, nomeDarte, carriera, String.valueOf(anniCarriera), dataNascita, sesso);
                 new ErrorText("Connessione persa").okay();
-                Router.getInstance().navigate("registrazione.fxml", "ShareRoomAfam - Registrazione");
+                Router.getInstance().navigate("registrazione.fxml", "MyStage - Registrazione");
             }
 
         } catch (Exception e) {
@@ -192,7 +192,7 @@ public class AuthCtrl {
 
     @FXML
     public void cliccaEseguiAccessoconSPID(ActionEvent event) {
-        Router.getInstance().navigate("accesso_con_spid_menu.fxml", "ShareRoomAfam - Seleziona Provider SPID");
+        Router.getInstance().navigate("accesso_con_spid_menu.fxml", "MyStage - Seleziona Provider SPID");
     }
 
     @FXML
@@ -204,7 +204,7 @@ public class AuthCtrl {
         String provider = enteSpidCombo.getValue();
         UserSession.getInstance().saveToCache("providerSPID", provider);
         new SuccessfulText("Reindirizzamento al gateway di " + provider + "...").okay();
-        Router.getInstance().navigate("accesso_con_spid_form.fxml", "ShareRoomAfam - Gateway SPID");
+        Router.getInstance().navigate("accesso_con_spid_form.fxml", "MyStage - Gateway SPID");
     }
 
     @FXML
@@ -216,11 +216,21 @@ public class AuthCtrl {
         try {
             java.sql.ResultSet rs = DBMSboundary.getInstance().queryDBMSVerificaEsistenzaAccountByCF(cfSpid);
             if (rs != null && rs.next()) {
-                UserSession.getInstance().setUtenteLoggato(cfSpid);
-                Router.getInstance().navigate("profilo.fxml", "ShareRoomAfam - Profilo");
+                String email = rs.getString("email");
+                String otp = String.format("%06d", new java.util.Random().nextInt(999999));
+                DBMSboundary.getInstance().insertDBMScodice(email, otp);
+                boolean sent = EmailSender.inviaCodice2FA(email, otp);
+                
+                if (sent) {
+                    UserSession.getInstance().setEmailInVerifica(email);
+                    UserSession.getInstance().setAzioneVerifica("LOGIN");
+                    Router.getInstance().navigate("inserisci_codice.fxml", "MyStage - Verifica 2FA");
+                } else {
+                    new ErrorText("Errore durante l'invio dell'email per l'OTP.").okay();
+                }
             } else {
                 new ErrorText("Il Codice Fiscale fornito dallo SPID (" + cfSpid + ") non è associato ad alcun account registrato. Autenticazione fallita.").okay();
-                Router.getInstance().navigate("login.fxml", "ShareRoomAfam - Login");
+                Router.getInstance().navigate("login.fxml", "MyStage - Login");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -230,7 +240,7 @@ public class AuthCtrl {
     @FXML
     public void handleRecuperaPassword(ActionEvent event) {
         // RAD rcpr_pswd passo 2: il sistema presenta il modulo RecuperaPasswordForm
-        Router.getInstance().navigate("recupera_password.fxml", "ShareRoomAfam - Recupera Password");
+        Router.getInstance().navigate("recupera_password.fxml", "MyStage - Recupera Password");
     }
 
     @FXML
@@ -260,12 +270,18 @@ public class AuthCtrl {
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
-                Router.getInstance().navigate("vista_scouter.fxml", "ShareRoomAfam - Vista Stanza");
+                Router.getInstance().navigate("vista_scouter.fxml", "MyStage - Vista Stanza");
             } else {
                 new pkgTextmessage.ErrorText("Nessuna stanza trovata con questo link.").okay();
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @FXML
+    public void cercaArtistiGuest(ActionEvent event) {
+        UserSession.getInstance().setUtenteLoggato(null); // Assicuriamoci che non ci sia sessione
+        Router.getInstance().navigate("cerca_artista.fxml", "MyStage - Ricerca Artisti");
     }
 }
