@@ -31,10 +31,16 @@ public class Router {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/" + fxmlFile));
             Parent root = loader.load();
-            Scene scene = new Scene(root);
             primaryStage.setTitle(title);
-            primaryStage.setScene(scene);
-            primaryStage.show();
+
+            // Riutilizza la Scene esistente per non resettare le dimensioni dello Stage
+            Scene currentScene = primaryStage.getScene();
+            if (currentScene != null) {
+                currentScene.setRoot(root);
+            } else {
+                primaryStage.setScene(new Scene(root));
+                primaryStage.show();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
