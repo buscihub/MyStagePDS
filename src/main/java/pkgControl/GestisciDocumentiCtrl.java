@@ -2,10 +2,6 @@ package pkgControl;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import pkgEntity.DocumentoEntity;
 import pkgUtility.UserSession;
 import pkgBoundary.DBMSboundary;
 
@@ -20,18 +16,19 @@ public class GestisciDocumentiCtrl {
         javafx.stage.FileChooser fileChooser = new javafx.stage.FileChooser();
         fileChooser.setTitle("Seleziona File da Caricare");
         java.util.List<java.io.File> files = fileChooser.showOpenMultipleDialog(null);
-        
+
         if (files != null && !files.isEmpty()) {
             javafx.scene.control.Dialog<java.util.Map<java.io.File, Boolean>> dialog = new javafx.scene.control.Dialog<>();
             dialog.setTitle("Imposta Visibilità Documenti");
             dialog.setHeaderText("Definisci lo stato (visibile/privato) per ciascun documento");
 
-            javafx.scene.control.ButtonType confermaButtonType = new javafx.scene.control.ButtonType("Conferma", javafx.scene.control.ButtonBar.ButtonData.OK_DONE);
+            javafx.scene.control.ButtonType confermaButtonType = new javafx.scene.control.ButtonType("Conferma",
+                    javafx.scene.control.ButtonBar.ButtonData.OK_DONE);
             dialog.getDialogPane().getButtonTypes().addAll(confermaButtonType, javafx.scene.control.ButtonType.CANCEL);
 
             javafx.scene.layout.VBox vbox = new javafx.scene.layout.VBox(10);
             java.util.Map<java.io.File, javafx.scene.control.CheckBox> checkBoxes = new java.util.HashMap<>();
-            
+
             for (java.io.File file : files) {
                 javafx.scene.layout.HBox hbox = new javafx.scene.layout.HBox(10);
                 javafx.scene.control.Label nameLabel = new javafx.scene.control.Label(file.getName());
@@ -43,11 +40,12 @@ public class GestisciDocumentiCtrl {
                 vbox.getChildren().add(hbox);
             }
             dialog.getDialogPane().setContent(new javafx.scene.control.ScrollPane(vbox));
-            
+
             dialog.setResultConverter(dialogButton -> {
                 if (dialogButton == confermaButtonType) {
                     java.util.Map<java.io.File, Boolean> result = new java.util.HashMap<>();
-                    for (java.util.Map.Entry<java.io.File, javafx.scene.control.CheckBox> entry : checkBoxes.entrySet()) {
+                    for (java.util.Map.Entry<java.io.File, javafx.scene.control.CheckBox> entry : checkBoxes
+                            .entrySet()) {
                         result.put(entry.getKey(), entry.getValue().isSelected());
                     }
                     return result;
@@ -58,18 +56,20 @@ public class GestisciDocumentiCtrl {
             dialog.showAndWait().ifPresent(resultMap -> {
                 try {
                     java.io.File destDir = new java.io.File("src/main/resources/images");
-                    if (!destDir.exists()) destDir.mkdirs();
-                    
+                    if (!destDir.exists())
+                        destDir.mkdirs();
+
                     for (java.util.Map.Entry<java.io.File, Boolean> entry : resultMap.entrySet()) {
                         java.io.File file = entry.getKey();
                         boolean visibile = entry.getValue();
                         java.io.File destFile = new java.io.File(destDir, file.getName());
-                        java.nio.file.Files.copy(file.toPath(), destFile.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-                        
+                        java.nio.file.Files.copy(file.toPath(), destFile.toPath(),
+                                java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+
                         String path = "src/main/resources/images/" + file.getName();
                         DBMSboundary.getInstance().queryDBMSInsertDocumenti(getUtenteCorrente(), visibile, path);
                     }
-                    
+
                     new pkgTextmessage.SuccessfulText("Documenti caricati con successo!").okay();
                 } catch (Exception e) {
                     e.printStackTrace();
