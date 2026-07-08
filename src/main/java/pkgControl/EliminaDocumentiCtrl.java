@@ -17,7 +17,9 @@ public class EliminaDocumentiCtrl {
     private TableColumn<DocumentoEntity, String> percorsoCol;
 
     @FXML
-    private TableColumn<DocumentoEntity, Void> azioneCol;
+    private TableColumn<DocumentoEntity, Void> selezioneCol;
+
+    private java.util.Set<Integer> selectedDocIds = new java.util.HashSet<>();
 
     private String getUtenteCorrente() {
         return UserSession.getInstance().getUtenteLoggato();
@@ -27,23 +29,28 @@ public class EliminaDocumentiCtrl {
     public void initialize() {
         percorsoCol.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("percorso"));
         
-        azioneCol.setCellFactory(col -> new javafx.scene.control.TableCell<>() {
-            private final javafx.scene.control.Button btn = new javafx.scene.control.Button("Elimina");
+        selezioneCol.setCellFactory(col -> new javafx.scene.control.TableCell<>() {
+            private final javafx.scene.control.CheckBox cb = new javafx.scene.control.CheckBox();
             {
-                btn.setStyle("-fx-background-color: #dc3545; -fx-text-fill: white;");
-                btn.setOnAction(e -> {
+                cb.setOnAction(e -> {
                     DocumentoEntity doc = getTableView().getItems().get(getIndex());
-                    pkgTextmessage.ConfirmText conferma = new pkgTextmessage.ConfirmText("Vuoi davvero eliminare questo documento?");
-                    if (conferma.si()) {
-                        DBMSboundary.getInstance().queryDBMSRemoveDocumenti(doc.getIdDocumento());
-                        loadDocumenti();
+                    if (cb.isSelected()) {
+                        selectedDocIds.add(doc.getIdDocumento());
+                    } else {
+                        selectedDocIds.remove(doc.getIdDocumento());
                     }
                 });
             }
             @Override
             protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
-                setGraphic(empty ? null : btn);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    DocumentoEntity doc = getTableView().getItems().get(getIndex());
+                    cb.setSelected(selectedDocIds.contains(doc.getIdDocumento()));
+                    setGraphic(cb);
+                }
             }
         });
 
@@ -52,6 +59,7 @@ public class EliminaDocumentiCtrl {
 
     private void loadDocumenti() {
         try {
+            selectedDocIds.clear();
             documentiTable.getItems().clear();
             java.sql.ResultSet rs = DBMSboundary.getInstance().queryDBMSListaDocumenti(getUtenteCorrente());
             while (rs != null && rs.next()) {
@@ -65,6 +73,22 @@ public class EliminaDocumentiCtrl {
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    @FXML
+    public void eliminaSelezionati(ActionEvent event) {
+        if (selectedDocIds.isEmpty()) {
+            new pkgTextmessage.ErrorText("Nessun documento selezionato.").okay();
+            return;
+        }
+        pkgTextmessage.ConfirmText conferma = new pkgTextmessage.ConfirmText("Vuoi davvero eliminare i " + selectedDocIds.size() + " documenti selezionati?");
+        if (conferma.si()) {
+            for (int id : selectedDocIds) {
+                DBMSboundary.getInstance().queryDBMSRemoveDocumenti(id);
+            }
+            new pkgTextmessage.SuccessfulText("Documenti eliminati con successo.").okay();
+            loadDocumenti();
         }
     }
 

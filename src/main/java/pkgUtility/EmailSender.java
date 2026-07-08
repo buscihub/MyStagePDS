@@ -8,8 +8,8 @@ import java.util.Properties;
 public class EmailSender {
 
     // Dummy credentials (should be replaced by real ones)
-    public static final String EMAIL_MITTENTE = "noreply.mystage@gmail.com";
-    public static final String PASSWORD_MITTENTE = "dummy_password_123";
+    public static final String EMAIL_MITTENTE = "federicobusciglio229@gmail.com";
+    public static final String PASSWORD_MITTENTE = "vkmebtwclpnnyqdr";
 
     public static boolean inviaCodice2FA(String emailDestinatario, String codiceGenerato) {
         String host = "smtp.gmail.com";
@@ -31,15 +31,11 @@ public class EmailSender {
             message.setFrom(new InternetAddress(EMAIL_MITTENTE));
             message.addRecipient(Message.RecipientType.TO, new InternetAddress(emailDestinatario));
             message.setSubject("MyStage - Codice di Verifica");
-            message.setText("Il tuo codice di verifica OTP è: " + codiceGenerato + "\n\nNon condividere questo codice con nessuno.");
+            message.setText("Il tuo codice di verifica OTP è: " + codiceGenerato
+                    + "\n\nNon condividere questo codice con nessuno.");
 
-            // To avoid crash if credentials are wrong, we catch AuthenticationFailedException
-            // Transport.send(message); // Uncomment to really send
-            
-            // Simulazione tramite pop-up visivo
-            javafx.application.Platform.runLater(() -> {
-                new pkgTextmessage.SuccessfulText("SIMULAZIONE EMAIL 2FA\nDestinatario: " + emailDestinatario + "\n\nCodice OTP: " + codiceGenerato).okay();
-            });
+            // Invio reale
+            Transport.send(message);
 
             return true;
         } catch (Exception mex) {

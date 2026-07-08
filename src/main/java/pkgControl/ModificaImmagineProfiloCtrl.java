@@ -21,7 +21,12 @@ public class ModificaImmagineProfiloCtrl {
         File destFile = fileChooser.showOpenDialog(Router.getInstance().getStage());
         if (destFile != null) {
             try {
+                File dir = new File("src/main/resources/images");
+                if (!dir.exists()) {
+                    dir.mkdirs();
+                }
                 String path = "src/main/resources/images/" + destFile.getName();
+                java.nio.file.Files.copy(destFile.toPath(), java.nio.file.Paths.get(path), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
                 DBMSboundary.getInstance().queryDBMSUpdateImmagineProfilo(path, UserSession.getInstance().getUtenteLoggato());
                 new SuccessfulText("Immagine aggiornata con successo.").okay();
                 Router.getInstance().navigate("gestione_dati_personali.fxml", "MyStage - Gestione Dati Personali");

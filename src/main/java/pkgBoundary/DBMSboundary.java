@@ -104,9 +104,8 @@ public class DBMSboundary {
     }
 
     public int insertDBMScodice(String email, String codice) {
-        try {
-            String query = "UPDATE ARTISTA SET codiceVerifica = ? WHERE email = ?";
-            PreparedStatement ps = getConnection().prepareStatement(query);
+        String query = "UPDATE ARTISTA SET codiceVerifica = ? WHERE email = ?";
+        try (PreparedStatement ps = getConnection().prepareStatement(query)) {
             ps.setString(1, codice);
             ps.setString(2, email);
             return ps.executeUpdate();
@@ -143,9 +142,8 @@ public class DBMSboundary {
     }
 
     public int insertDBMSCreaProfilo(String nome, String cognome, String dataDiNascita, String sesso, String codiceFiscale, String nomeDarte, String carriera, int anniCarriera, String email, String password) {
-        try {
-            String query = "INSERT INTO ARTISTA (codiceFiscale, nome, cognome, dataDiNascita, sesso, nomeDarte, email, password, urlImmagineProfilo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-            PreparedStatement ps = getConnection().prepareStatement(query);
+        String query = "INSERT INTO ARTISTA (codiceFiscale, nome, cognome, dataDiNascita, sesso, nomeDarte, email, password, urlImmagineProfilo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement ps = getConnection().prepareStatement(query)) {
             ps.setString(1, codiceFiscale);
             ps.setString(2, nome);
             ps.setString(3, cognome);
@@ -160,11 +158,12 @@ public class DBMSboundary {
             
             if (res > 0 && carriera != null && !carriera.trim().isEmpty()) {
                 String queryCarriera = "INSERT INTO CARRIERA (codiceFiscaleArtist, tipologia, anni) VALUES (?, ?, ?)";
-                PreparedStatement ps2 = getConnection().prepareStatement(queryCarriera);
-                ps2.setString(1, codiceFiscale);
-                ps2.setString(2, carriera);
-                ps2.setInt(3, anniCarriera);
-                ps2.executeUpdate();
+                try (PreparedStatement ps2 = getConnection().prepareStatement(queryCarriera)) {
+                    ps2.setString(1, codiceFiscale);
+                    ps2.setString(2, carriera);
+                    ps2.setInt(3, anniCarriera);
+                    ps2.executeUpdate();
+                }
             }
             
             return res;
@@ -258,9 +257,8 @@ public class DBMSboundary {
 
     // --- Gestione Profilo ---
     public int removeDBMSProfiloArtista(String codiceFiscale) {
-        try {
-            String query = "DELETE FROM ARTISTA WHERE codiceFiscale = ?";
-            PreparedStatement ps = getConnection().prepareStatement(query);
+        String query = "DELETE FROM ARTISTA WHERE codiceFiscale = ?";
+        try (PreparedStatement ps = getConnection().prepareStatement(query)) {
             ps.setString(1, codiceFiscale);
             return ps.executeUpdate();
         } catch (SQLException e) {
@@ -270,9 +268,8 @@ public class DBMSboundary {
     }
 
     public int updateDBMSPassword(String codiceFiscale, String nuovaPassword) {
-        try {
-            String query = "UPDATE ARTISTA SET password = ? WHERE codiceFiscale = ?";
-            PreparedStatement ps = getConnection().prepareStatement(query);
+        String query = "UPDATE ARTISTA SET password = ? WHERE codiceFiscale = ?";
+        try (PreparedStatement ps = getConnection().prepareStatement(query)) {
             ps.setString(1, nuovaPassword);
             ps.setString(2, codiceFiscale);
             return ps.executeUpdate();
@@ -283,13 +280,13 @@ public class DBMSboundary {
     }
 
     public boolean queryDBMSVerificaPassword(String codiceFiscale, String password) {
-        try {
-            String query = "SELECT * FROM ARTISTA WHERE codiceFiscale = ? AND password = ?";
-            PreparedStatement ps = getConnection().prepareStatement(query);
+        String query = "SELECT * FROM ARTISTA WHERE codiceFiscale = ? AND password = ?";
+        try (PreparedStatement ps = getConnection().prepareStatement(query)) {
             ps.setString(1, codiceFiscale);
             ps.setString(2, password);
-            ResultSet rs = ps.executeQuery();
-            return rs.next();
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
@@ -297,12 +294,12 @@ public class DBMSboundary {
     }
 
     public boolean queryDBMSVerificaNomeArte(String nomeDarte) {
-        try {
-            String query = "SELECT * FROM ARTISTA WHERE nomeDarte = ?";
-            PreparedStatement ps = getConnection().prepareStatement(query);
+        String query = "SELECT * FROM ARTISTA WHERE nomeDarte = ?";
+        try (PreparedStatement ps = getConnection().prepareStatement(query)) {
             ps.setString(1, nomeDarte);
-            ResultSet rs = ps.executeQuery();
-            return rs.next();
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
         } catch (SQLException e) {
             e.printStackTrace();
             return true;
@@ -310,9 +307,8 @@ public class DBMSboundary {
     }
 
     public int updateDBMSNomeArte(String codiceFiscale, String nuovoNomeArte) {
-        try {
-            String query = "UPDATE ARTISTA SET nomeDarte = ? WHERE codiceFiscale = ?";
-            PreparedStatement ps = getConnection().prepareStatement(query);
+        String query = "UPDATE ARTISTA SET nomeDarte = ? WHERE codiceFiscale = ?";
+        try (PreparedStatement ps = getConnection().prepareStatement(query)) {
             ps.setString(1, nuovoNomeArte);
             ps.setString(2, codiceFiscale);
             return ps.executeUpdate();
@@ -323,9 +319,8 @@ public class DBMSboundary {
     }
 
     public int queryDBMSUpdateImmagineProfilo(String urlImmagine, String codiceFiscale) {
-        try {
-            String query = "UPDATE ARTISTA SET urlImmagineProfilo = ? WHERE codiceFiscale = ?";
-            PreparedStatement ps = getConnection().prepareStatement(query);
+        String query = "UPDATE ARTISTA SET urlImmagineProfilo = ? WHERE codiceFiscale = ?";
+        try (PreparedStatement ps = getConnection().prepareStatement(query)) {
             ps.setString(1, urlImmagine);
             ps.setString(2, codiceFiscale);
             return ps.executeUpdate();
@@ -341,9 +336,8 @@ public class DBMSboundary {
 
     // --- Carriera ---
     public int insertDBMSCarriera(String codiceFiscale, String tipologia, int anni) {
-        try {
-            String query = "INSERT INTO CARRIERA (codiceFiscaleArtist, tipologia, anni) VALUES (?, ?, ?)";
-            PreparedStatement ps = getConnection().prepareStatement(query);
+        String query = "INSERT INTO CARRIERA (codiceFiscaleArtist, tipologia, anni) VALUES (?, ?, ?)";
+        try (PreparedStatement ps = getConnection().prepareStatement(query)) {
             ps.setString(1, codiceFiscale);
             ps.setString(2, tipologia);
             ps.setInt(3, anni);
@@ -367,9 +361,8 @@ public class DBMSboundary {
     }
 
     public int removeDBMSCarriereSelezionate(int idCarriera) {
-        try {
-            String query = "DELETE FROM CARRIERA WHERE idCarriera = ?";
-            PreparedStatement ps = getConnection().prepareStatement(query);
+        String query = "DELETE FROM CARRIERA WHERE idCarriera = ?";
+        try (PreparedStatement ps = getConnection().prepareStatement(query)) {
             ps.setInt(1, idCarriera);
             return ps.executeUpdate();
         } catch (SQLException e) {
@@ -420,9 +413,8 @@ public class DBMSboundary {
     }
 
     public int queryDBMSRemoveDocumenti(int idDocumento) {
-        try {
-            String query = "DELETE FROM DOCUMENTO WHERE idDocumento = ?";
-            PreparedStatement ps = getConnection().prepareStatement(query);
+        String query = "DELETE FROM DOCUMENTO WHERE idDocumento = ?";
+        try (PreparedStatement ps = getConnection().prepareStatement(query)) {
             ps.setInt(1, idDocumento);
             return ps.executeUpdate();
         } catch (SQLException e) {
@@ -432,9 +424,8 @@ public class DBMSboundary {
     }
 
     public int queryDBMSUpdateStatoDocumenti(int idDocumento, boolean visibile) {
-        try {
-            String query = "UPDATE DOCUMENTO SET visibile = ? WHERE idDocumento = ?";
-            PreparedStatement ps = getConnection().prepareStatement(query);
+        String query = "UPDATE DOCUMENTO SET visibile = ? WHERE idDocumento = ?";
+        try (PreparedStatement ps = getConnection().prepareStatement(query)) {
             ps.setBoolean(1, visibile);
             ps.setInt(2, idDocumento);
             return ps.executeUpdate();
@@ -446,13 +437,13 @@ public class DBMSboundary {
 
     // --- Stanze ---
     public boolean queryDBMSVerificaNomeStanza(String codiceFiscale, String nomeStanza) {
-        try {
-            String query = "SELECT * FROM STANZA WHERE codiceFiscaleArtist = ? AND nomeStanza = ?";
-            PreparedStatement ps = getConnection().prepareStatement(query);
+        String query = "SELECT * FROM STANZA WHERE codiceFiscaleArtist = ? AND nomeStanza = ?";
+        try (PreparedStatement ps = getConnection().prepareStatement(query)) {
             ps.setString(1, codiceFiscale);
             ps.setString(2, nomeStanza);
-            ResultSet rs = ps.executeQuery();
-            return rs.next();
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
         } catch (SQLException e) {
             e.printStackTrace();
             return true;
@@ -503,9 +494,8 @@ public class DBMSboundary {
     }
 
     public void insertDocumentiDBMSStanza(int idStanza, int idDocumento, boolean scaricabile) {
-        try {
-            String query = "INSERT INTO CONTIENE (idStanza, idDocumento, scaricabile) VALUES (?, ?, ?)";
-            PreparedStatement ps = getConnection().prepareStatement(query);
+        String query = "INSERT INTO CONTIENE (idStanza, idDocumento, scaricabile) VALUES (?, ?, ?)";
+        try (PreparedStatement ps = getConnection().prepareStatement(query)) {
             ps.setInt(1, idStanza);
             ps.setInt(2, idDocumento);
             ps.setBoolean(3, scaricabile);
@@ -533,9 +523,8 @@ public class DBMSboundary {
     }
 
     public int updateDBMSNomeStanza(int idStanza, String nuovoNome) {
-        try {
-            String query = "UPDATE STANZA SET nomeStanza = ? WHERE idStanza = ?";
-            PreparedStatement ps = getConnection().prepareStatement(query);
+        String query = "UPDATE STANZA SET nomeStanza = ? WHERE idStanza = ?";
+        try (PreparedStatement ps = getConnection().prepareStatement(query)) {
             ps.setString(1, nuovoNome);
             ps.setInt(2, idStanza);
             return ps.executeUpdate();
@@ -549,19 +538,22 @@ public class DBMSboundary {
         try {
             // First delete constraints in CONTIENE and VISUALIZZAZIONE
             String query1 = "DELETE FROM CONTIENE WHERE idStanza = ?";
-            PreparedStatement ps1 = getConnection().prepareStatement(query1);
-            ps1.setInt(1, idStanza);
-            ps1.executeUpdate();
+            try (PreparedStatement ps1 = getConnection().prepareStatement(query1)) {
+                ps1.setInt(1, idStanza);
+                ps1.executeUpdate();
+            }
 
             String query2 = "DELETE FROM VISUALIZZAZIONE WHERE idStanza = ?";
-            PreparedStatement ps2 = getConnection().prepareStatement(query2);
-            ps2.setInt(1, idStanza);
-            ps2.executeUpdate();
+            try (PreparedStatement ps2 = getConnection().prepareStatement(query2)) {
+                ps2.setInt(1, idStanza);
+                ps2.executeUpdate();
+            }
 
             String query3 = "DELETE FROM STANZA WHERE idStanza = ?";
-            PreparedStatement ps3 = getConnection().prepareStatement(query3);
-            ps3.setInt(1, idStanza);
-            return ps3.executeUpdate();
+            try (PreparedStatement ps3 = getConnection().prepareStatement(query3)) {
+                ps3.setInt(1, idStanza);
+                return ps3.executeUpdate();
+            }
         } catch (SQLException e) {
             e.printStackTrace();
             return 0;
@@ -606,9 +598,8 @@ public class DBMSboundary {
     }
 
     public int queryDBMSRemoveDocumentiStanza(int idStanza, int idDocumento) {
-        try {
-            String query = "DELETE FROM CONTIENE WHERE idStanza = ? AND idDocumento = ?";
-            PreparedStatement ps = getConnection().prepareStatement(query);
+        String query = "DELETE FROM CONTIENE WHERE idStanza = ? AND idDocumento = ?";
+        try (PreparedStatement ps = getConnection().prepareStatement(query)) {
             ps.setInt(1, idStanza);
             ps.setInt(2, idDocumento);
             return ps.executeUpdate();
@@ -619,9 +610,8 @@ public class DBMSboundary {
     }
 
     public int queryDBMSUpdateScaricabiliENonScaricabiliDocumentiStanza(int idStanza, int idDocumento, boolean scaricabile) {
-        try {
-            String query = "UPDATE CONTIENE SET scaricabile = ? WHERE idStanza = ? AND idDocumento = ?";
-            PreparedStatement ps = getConnection().prepareStatement(query);
+        String query = "UPDATE CONTIENE SET scaricabile = ? WHERE idStanza = ? AND idDocumento = ?";
+        try (PreparedStatement ps = getConnection().prepareStatement(query)) {
             ps.setBoolean(1, scaricabile);
             ps.setInt(2, idStanza);
             ps.setInt(3, idDocumento);
@@ -661,9 +651,8 @@ public class DBMSboundary {
     }
 
     public void insertDBMSVisualizzazione(int idStanza, int idVisualizzatore) {
-        try {
-            String query = "INSERT INTO VISUALIZZAZIONE (idVisualizzatore, idStanza, dataVisualizzazione) VALUES (?, ?, DATETIME('now'))";
-            PreparedStatement ps = getConnection().prepareStatement(query);
+        String query = "INSERT INTO VISUALIZZAZIONE (idVisualizzatore, idStanza, dataVisualizzazione) VALUES (?, ?, DATETIME('now'))";
+        try (PreparedStatement ps = getConnection().prepareStatement(query)) {
             ps.setInt(1, idVisualizzatore);
             ps.setInt(2, idStanza);
             ps.executeUpdate();

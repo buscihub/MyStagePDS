@@ -59,11 +59,9 @@ public class ProfiloPubblicoCtrl {
                 carriereLabel.setText(carriereStr.toString());
 
                 // Documenti
-                ResultSet rsDocs = DBMSboundary.getInstance().queryDBMSListaDocumenti(cf);
+                ResultSet rsDocs = DBMSboundary.getInstance().queryDBMSListaDocumentiVisibili(cf);
                 while (rsDocs != null && rsDocs.next()) {
-                    if (rsDocs.getBoolean("visibile")) {
-                        documentiPubbliciList.getItems().add(rsDocs.getString("percorso"));
-                    }
+                    documentiPubbliciList.getItems().add(rsDocs.getString("percorso"));
                 }
             } catch (Exception e) {
                 e.printStackTrace();

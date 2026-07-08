@@ -17,3 +17,10 @@ INSERT INTO CONTIENE (idStanza, idDocumento, scaricabile) VALUES
 (1, 1, 1),
 (1, 2, 0),
 (2, 3, 1);
+
+INSERT INTO CARRIERA (codiceFiscaleArtist, tipologia, anni) VALUES
+('RSSMRA80A01H501U', 'Pittore', 10),
+('RSSMRA80A01H501U', 'Scultore', 5),
+('BNCLCU90B02H501V', 'Fotografa', 8),
+('VRDLGI85C03H501W', 'Musicista', 12),
+('TESTCF1234567890', 'Attore', 3);

@@ -22,10 +22,11 @@
             
             <TableView fx:id="documentiTable" prefHeight="300" prefWidth="500">
                 <columns>
-                    <TableColumn fx:id="percorsoCol" text="Percorso" prefWidth="350"/>
-                    <TableColumn fx:id="azioneCol" text="Azione" prefWidth="120"/>
+                    <TableColumn fx:id="percorsoCol" text="Percorso" prefWidth="370"/>
+                    <TableColumn fx:id="selezioneCol" text="Seleziona" prefWidth="100"/>
                 </columns>
             </TableView>
+            <Button text="Elimina Selezionati" onAction="#eliminaSelezionati" style="-fx-background-color: #dc3545; -fx-text-fill: white; -fx-font-weight: bold;"/>
         </VBox>
     </center>
 </BorderPane>
