@@ -41,7 +41,13 @@ public class InserisciCodiceCtrl {
                     Router.getInstance().navigate("login.fxml", "ShareRoomAfam - Login");
                 }
             } else {
-                new ErrorText("Codice OTP errato. Riprova.").okay();
+                if ("LOGIN".equals(azione)) {
+                    new ErrorText("Codice errato").okay();
+                } else if ("RECUPERO".equals(azione)) {
+                    new ErrorText("Codice non valido").okay();
+                } else {
+                    new ErrorText("Codice OTP errato. Riprova.").okay();
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();

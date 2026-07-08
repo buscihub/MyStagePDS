@@ -16,12 +16,56 @@ public class AuthCtrl {
     private TextField emailField;
     @FXML
     private javafx.scene.control.PasswordField passwordField;
+    @FXML
+    private javafx.scene.control.ComboBox<String> enteSpidCombo;
+    @FXML
+    private javafx.scene.control.Label providerLabel;
 
     @FXML
     public void initialize() {
         if (sessoField != null) {
             sessoField.getItems().addAll("M", "F", "ND");
         }
+        if (enteSpidCombo != null) {
+            enteSpidCombo.getItems().addAll("PosteID", "Aruba ID", "SpidItalia", "Sielte id", "InfoCert ID");
+        }
+        
+        String providerSelezionato = (String) UserSession.getInstance().retrieveFromCache("providerSPID");
+        if (providerLabel != null && providerSelezionato != null) {
+            providerLabel.setText("Provider selezionato: " + providerSelezionato);
+        }
+        
+        @SuppressWarnings("unchecked")
+        java.util.Map<String, String> formData = (java.util.Map<String, String>) pkgUtility.UserSession.getInstance().retrieveFromCache("registrazione_form");
+        if (formData != null) {
+            if (emailField != null) emailField.setText(formData.get("email"));
+            if (nomeField != null) nomeField.setText(formData.get("nome"));
+            if (cognomeField != null) cognomeField.setText(formData.get("cognome"));
+            if (codiceFiscaleField != null) codiceFiscaleField.setText(formData.get("cf"));
+            if (nomeDarteField != null) nomeDarteField.setText(formData.get("nomeDarte"));
+            if (carrieraField != null) carrieraField.setText(formData.get("carriera"));
+            if (passwordField != null && formData.get("password") != null) passwordField.setText(formData.get("password"));
+            if (anniCarrieraField != null) anniCarrieraField.setText(formData.get("anniCarriera"));
+            if (dataNascitaField != null && formData.get("dataNascita") != null && !formData.get("dataNascita").isEmpty()) {
+                try { dataNascitaField.setValue(java.time.LocalDate.parse(formData.get("dataNascita"))); } catch(Exception e) {}
+            }
+            if (sessoField != null && formData.get("sesso") != null) sessoField.setValue(formData.get("sesso"));
+        }
+    }
+
+    private void salvaCacheRegistrazione(String email, String password, String nome, String cognome, String cf, String nomeDarte, String carriera, String anniCarriera, String dataNascita, String sesso) {
+        java.util.Map<String, String> formData = new java.util.HashMap<>();
+        formData.put("email", email);
+        formData.put("password", password);
+        formData.put("nome", nome);
+        formData.put("cognome", cognome);
+        formData.put("cf", cf);
+        formData.put("nomeDarte", nomeDarte);
+        formData.put("carriera", carriera);
+        formData.put("anniCarriera", anniCarriera);
+        formData.put("dataNascita", dataNascita);
+        formData.put("sesso", sesso);
+        pkgUtility.UserSession.getInstance().saveToCache("registrazione_form", formData);
     }
 
     @FXML
@@ -63,7 +107,7 @@ public class AuthCtrl {
                     new ErrorText("Errore durante l'invio dell'email per l'OTP.").okay();
                 }
             } else {
-                new ErrorText("Credenziali non valide.").okay();
+                new ErrorText("Credenziali errate").okay();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -98,7 +142,9 @@ public class AuthCtrl {
             nome == null || nome.isEmpty() || cognome == null || cognome.isEmpty() ||
             cf == null || cf.isEmpty()) {
             
+            salvaCacheRegistrazione(email, password, nome, cognome, cf, nomeDarte, carriera, anniCarrieraStr, dataNascita, sesso);
             new ErrorText("Compilare tutti i campi obbligatori.").okay();
+            Router.getInstance().navigate("registrazione.fxml", "ShareRoomAfam - Registrazione");
             return;
         }
 
@@ -108,14 +154,18 @@ public class AuthCtrl {
                 anniCarriera = Integer.parseInt(anniCarrieraStr.trim());
             }
         } catch (NumberFormatException e) {
+            salvaCacheRegistrazione(email, password, nome, cognome, cf, nomeDarte, carriera, anniCarrieraStr, dataNascita, sesso);
             new ErrorText("Gli anni di carriera devono essere un numero intero.").okay();
+            Router.getInstance().navigate("registrazione.fxml", "ShareRoomAfam - Registrazione");
             return;
         }
 
         try {
             java.sql.ResultSet rs = DBMSboundary.getInstance().queryDBMSVerificaRegistrazione(cf, email);
             if (rs != null && rs.next()) {
-                new ErrorText("Account già esistente con questo CF o Email.").okay();
+                salvaCacheRegistrazione(email, password, nome, cognome, cf, nomeDarte, carriera, String.valueOf(anniCarriera), dataNascita, sesso);
+                new ErrorText("Registrazione fallita").okay();
+                Router.getInstance().navigate("registrazione.fxml", "ShareRoomAfam - Registrazione");
                 return;
             }
 
@@ -125,19 +175,9 @@ public class AuthCtrl {
                 pkgUtility.UserSession.getInstance().clearCache("registrazione_form");
                 Router.getInstance().navigate("login.fxml", "ShareRoomAfam - Login");
             } else {
-                new ErrorText("Connessione persa o errore DBMS. Dati salvati in cache temporanea.").okay();
-                java.util.Map<String, String> formData = new java.util.HashMap<>();
-                formData.put("email", email);
-                formData.put("password", password);
-                formData.put("nome", nome);
-                formData.put("cognome", cognome);
-                formData.put("cf", cf);
-                formData.put("nomeDarte", nomeDarte);
-                formData.put("carriera", carriera);
-                formData.put("anniCarriera", String.valueOf(anniCarriera));
-                formData.put("dataNascita", dataNascita);
-                formData.put("sesso", sesso);
-                pkgUtility.UserSession.getInstance().saveToCache("registrazione_form", formData);
+                salvaCacheRegistrazione(email, password, nome, cognome, cf, nomeDarte, carriera, String.valueOf(anniCarriera), dataNascita, sesso);
+                new ErrorText("Connessione persa").okay();
+                Router.getInstance().navigate("registrazione.fxml", "ShareRoomAfam - Registrazione");
             }
 
         } catch (Exception e) {
@@ -147,7 +187,30 @@ public class AuthCtrl {
 
     @FXML
     public void handleSPID(ActionEvent event) {
-        new SuccessfulText("Reindirizzamento all'Identity Provider SPID...").okay();
+        cliccaEseguiAccessoconSPID(event);
+    }
+
+    @FXML
+    public void cliccaEseguiAccessoconSPID(ActionEvent event) {
+        Router.getInstance().navigate("accesso_con_spid_menu.fxml", "ShareRoomAfam - Seleziona Provider SPID");
+    }
+
+    @FXML
+    public void selezionaEnteSPID(ActionEvent event) {
+        if (enteSpidCombo == null || enteSpidCombo.getValue() == null) {
+            new ErrorText("Selezionare un provider SPID.").okay();
+            return;
+        }
+        String provider = enteSpidCombo.getValue();
+        UserSession.getInstance().saveToCache("providerSPID", provider);
+        new SuccessfulText("Reindirizzamento al gateway di " + provider + "...").okay();
+        Router.getInstance().navigate("accesso_con_spid_form.fxml", "ShareRoomAfam - Gateway SPID");
+    }
+
+    @FXML
+    public void cliccaInviaSPID(ActionEvent event) {
+        String provider = (String) UserSession.getInstance().retrieveFromCache("providerSPID");
+        new SuccessfulText("Autenticazione in corso da parte del provider " + provider + "...").okay();
         
         String cfSpid = "RSSMRA80A01H501U"; // CF mockato dal provider SPID
         try {
@@ -156,7 +219,8 @@ public class AuthCtrl {
                 UserSession.getInstance().setUtenteLoggato(cfSpid);
                 Router.getInstance().navigate("profilo.fxml", "ShareRoomAfam - Profilo");
             } else {
-                new ErrorText("Il Codice Fiscale fornito dallo SPID (" + cfSpid + ") non è associato ad alcun account registrato.").okay();
+                new ErrorText("Il Codice Fiscale fornito dallo SPID (" + cfSpid + ") non è associato ad alcun account registrato. Autenticazione fallita.").okay();
+                Router.getInstance().navigate("login.fxml", "ShareRoomAfam - Login");
             }
         } catch (Exception e) {
             e.printStackTrace();

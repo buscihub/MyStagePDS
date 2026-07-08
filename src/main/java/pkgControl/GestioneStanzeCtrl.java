@@ -111,9 +111,8 @@ public class GestioneStanzeCtrl implements Initializable {
 
         String cf = UserSession.getInstance().getUtenteLoggato();
         
-        // Verifica nome duplicato
         if (DBMSboundary.getInstance().queryDBMSVerificaNomeStanza(cf, nome)) {
-            new pkgTextmessage.ErrorText("Hai già una stanza con questo nome.").okay();
+            new pkgTextmessage.ErrorText("Nome già in uso").okay();
             return;
         }
 
@@ -205,7 +204,7 @@ public class GestioneStanzeCtrl implements Initializable {
                     nuovoNomeStanzaField.clear();
                     caricaStanze(); 
                 } else {
-                    new pkgTextmessage.ErrorText("Connessione persa o errore DBMS. Dati salvati in cache temporanea.").okay();
+                    new pkgTextmessage.ErrorText("Connessione persa").okay();
                     java.util.Map<String, Object> stanzaData = new java.util.HashMap<>();
                     stanzaData.put("nome", nome);
                     stanzaData.put("selections", selections);

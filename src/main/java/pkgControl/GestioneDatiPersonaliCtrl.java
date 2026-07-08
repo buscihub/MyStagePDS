@@ -5,7 +5,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import pkgUtility.UserSession;
-import pkgUtility.Router;
 import pkgBoundary.DBMSboundary;
 
 import java.net.URL;
@@ -39,6 +38,10 @@ public class GestioneDatiPersonaliCtrl implements Initializable {
             new pkgTextmessage.ErrorText("Il nome d'arte non può essere vuoto.").okay();
             return;
         }
+        if (DBMSboundary.getInstance().queryDBMSVerificaNomeArte(nuovoNome)) {
+            new pkgTextmessage.ErrorText("Nome d'arte non disponibile.").okay();
+            return;
+        }
         DBMSboundary.getInstance().updateDBMSNomeArte(getUtenteCorrente(), nuovoNome);
         new pkgTextmessage.SuccessfulText("Nome d'arte aggiornato con successo.").okay();
         nuovoNomeArteField.clear();
@@ -56,24 +59,14 @@ public class GestioneDatiPersonaliCtrl implements Initializable {
             new pkgTextmessage.ErrorText("Le password non coincidono.").okay();
             return;
         }
+        if (DBMSboundary.getInstance().queryDBMSVerificaPassword(getUtenteCorrente(), p1)) {
+            new pkgTextmessage.ErrorText("Attenzione: la nuova password deve essere diversa dalla precedente").okay();
+            return;
+        }
         DBMSboundary.getInstance().updateDBMSPassword(getUtenteCorrente(), p1);
         new pkgTextmessage.SuccessfulText("Password aggiornata con successo.").okay();
         nuovaPasswordField.clear();
         confermaPasswordField.clear();
     }
 
-    @FXML
-    public void cancellaProfilo(ActionEvent event) {
-        pkgTextmessage.ConfirmText conferma = new pkgTextmessage.ConfirmText(
-                "Stai per cancellare definitivamente il tuo profilo!\nSei sicuro? Questa operazione non può essere annullata.");
-        if (conferma.si()) {
-            DBMSboundary.getInstance().removeDBMSProfiloArtista(getUtenteCorrente());
-            UserSession.getInstance().logout();
-            try {
-                Router.getInstance().navigate("login.fxml", "ShareRoomAfam - Login");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
 }

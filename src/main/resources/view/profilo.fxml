@@ -12,6 +12,7 @@
             <Button text="Stanze" onAction="#goToStanze" styleClass="primary-button"/>
             <Button text="Cerca Profili" onAction="#goToProfili" styleClass="primary-button"/>
             <Button text="Logout" onAction="#doLogout" style="-fx-background-color: #dc3545; -fx-text-fill: white; -fx-border-radius: 5px; -fx-background-radius: 5px; -fx-padding: 8px 15px;"/>
+            <Button text="Cancella Profilo" onAction="#cancellaProfilo" style="-fx-background-color: #8b0000; -fx-text-fill: white; -fx-border-radius: 5px; -fx-background-radius: 5px; -fx-padding: 8px 15px;"/>
         </HBox>
     </top>
     

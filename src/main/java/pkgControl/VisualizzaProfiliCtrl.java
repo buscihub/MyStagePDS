@@ -4,15 +4,8 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.VBox;
-import javafx.geometry.Pos;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
 import pkgUtility.Router;
 import pkgBoundary.DBMSboundary;
 import pkgTextmessage.ErrorText;
@@ -34,6 +27,12 @@ public class VisualizzaProfiliCtrl {
     private TextField anniFilterField;
 
     @FXML
+    private Label nomeArtistaLabel;
+
+    @FXML
+    private ListView<String> documentiPubbliciList;
+
+    @FXML
     public void goToProfilo(ActionEvent event) {
         Router.getInstance().navigate("profilo.fxml", "ShareRoomAfam - Profilo");
     }
@@ -53,6 +52,9 @@ public class VisualizzaProfiliCtrl {
                 String cognome = rs.getString("cognome");
                 String arte = rs.getString("nomeDarte");
                 profiliList.getItems().add(cf + " - " + nome + " " + cognome + " (" + arte + ")");
+            }
+            if (profiliList.getItems().isEmpty()) {
+                new pkgTextmessage.ErrorText("Nessun artista trovato corrispondente ai criteri").okay();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -108,45 +110,47 @@ public class VisualizzaProfiliCtrl {
 
     private void mostraDocumenti(String cf) {
         try {
-            ResultSet rs = DBMSboundary.getInstance().queryDBMSListaDocumentiVisibili(cf);
-            VBox vbox = new VBox(10);
-            vbox.setAlignment(Pos.CENTER);
-            boolean found = false;
-
-            while (rs != null && rs.next()) {
-                found = true;
-                String path = rs.getString("percorso");
-                try {
-                    File file = new File(path);
-                    if (file.exists()) {
-                        Image img = new Image(file.toURI().toString());
-                        ImageView imgView = new ImageView(img);
-                        imgView.setFitWidth(300);
-                        imgView.setPreserveRatio(true);
-                        vbox.getChildren().add(imgView);
-                    } else {
-                        vbox.getChildren().add(new Label("File non trovato: " + path));
-                    }
-                } catch (Exception ex) {
-                    vbox.getChildren().add(new Label("Errore caricamento: " + path));
-                }
-            }
-
-            if (!found) {
-                vbox.getChildren().add(new Label("Nessun file presente per questo utente."));
-            }
-
-            ScrollPane sp = new ScrollPane(vbox);
-            sp.setFitToWidth(true);
-
-            Scene scene = new Scene(sp, 400, 500);
-            Stage stage = new Stage();
-            stage.setTitle("File dell'utente");
-            stage.setScene(scene);
-            stage.show();
-
+            pkgUtility.UserSession.getInstance().saveToCache("artistaDaVisualizzare", cf);
+            Router.getInstance().navigate("profilo_pubblico.fxml", "ShareRoomAfam - Profilo Pubblico");
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    @FXML
+    public void initialize() {
+        String cf = (String) pkgUtility.UserSession.getInstance().retrieveFromCache("artistaDaVisualizzare");
+        if (cf != null && nomeArtistaLabel != null && documentiPubbliciList != null) {
+            try {
+                ResultSet rs = DBMSboundary.getInstance().queryDBMSProfiloArtista(cf);
+                if (rs != null && rs.next()) {
+                    nomeArtistaLabel.setText(rs.getString("nome") + " " + rs.getString("cognome") + " ("
+                            + rs.getString("nomeDarte") + ")");
+                }
+
+                ResultSet rsDocs = DBMSboundary.getInstance().queryDBMSListaDocumenti(cf);
+                while (rsDocs != null && rsDocs.next()) {
+                    if (rsDocs.getBoolean("visibile")) {
+                        documentiPubbliciList.getItems().add(rsDocs.getString("percorso"));
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @FXML
+    public void apriDocumentoPubblico(MouseEvent event) {
+        if (event.getClickCount() == 2) {
+            String path = documentiPubbliciList.getSelectionModel().getSelectedItem();
+            if (path != null) {
+                try {
+                    java.awt.Desktop.getDesktop().open(new File(path));
+                } catch (Exception e) {
+                    new ErrorText("Impossibile aprire il file o file non trovato.").okay();
+                }
+            }
         }
     }
 }
