@@ -1,16 +1,16 @@
 package pkgControl;
 
+import java.sql.ResultSet;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
 import pkgBoundary.DBMSboundary;
@@ -18,13 +18,14 @@ import pkgEntity.DocumentoStanzaDto;
 import pkgUtility.Router;
 import pkgUtility.UserSession;
 
-import java.net.URL;
-import java.sql.ResultSet;
-import java.util.ResourceBundle;
+public class GenericaCtrl {
 
-public class VistaScouterCtrl implements Initializable {
+    @FXML
+    public void initialize() {
+        try { init_VistaScouterCtrl(); } catch(Exception e) { /* ignore */ }
+    }
 
-    @FXML private Label titoloStanzaLabel;
+@FXML private Label titoloStanzaLabel;
     @FXML private TableView<DocumentoStanzaDto> documentiTable;
     @FXML private TableColumn<DocumentoStanzaDto, String> colNomeFile;
     @FXML private TableColumn<DocumentoStanzaDto, Void> colAzioni;
@@ -38,8 +39,7 @@ public class VistaScouterCtrl implements Initializable {
     private final ObservableList<DocumentoStanzaDto> documentiList = FXCollections.observableArrayList();
     private Integer idStanzaCorrente;
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    private void init_VistaScouterCtrl() {
         idStanzaCorrente = UserSession.getInstance().getStanzaSelezionata();
         if (idStanzaCorrente == null) {
             handleEsci(null);

@@ -1,5 +1,6 @@
 package pkgControl;
 
+import java.io.File;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.stage.FileChooser;
@@ -9,11 +10,9 @@ import pkgTextmessage.SuccessfulText;
 import pkgUtility.Router;
 import pkgUtility.UserSession;
 
-import java.io.File;
-
 public class ModificaImmagineProfiloCtrl {
 
-    @FXML
+@FXML
     public void caricaAvatar(ActionEvent event) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Seleziona Immagine Profilo");

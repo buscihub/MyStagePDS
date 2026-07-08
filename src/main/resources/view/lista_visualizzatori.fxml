@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 
-<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pkgControl.ListaVisualizzatoriCtrl" stylesheets="@../css/style.css">
+<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pkgControl.GestioneStanzeCtrl" stylesheets="@../css/style.css">
     
     <left>
         <VBox spacing="15.0" styleClass="sidebar">

@@ -5,7 +5,7 @@
 <?import javafx.scene.image.*?>
 <?import javafx.geometry.Insets?>
 
-<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pkgControl.VistaScouterCtrl" stylesheets="@../css/style.css">
+<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pkgControl.GenericaCtrl" stylesheets="@../css/style.css">
     <top>
         <HBox spacing="20" alignment="CENTER_LEFT" style="-fx-background-color: #333333; -fx-padding: 15px;">
             <Label text="Area Guest - MyStage" style="-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;"/>

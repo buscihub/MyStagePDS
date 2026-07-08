@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 
-<VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pkgControl.HomeCtrl" stylesheets="@../css/style.css">
+<VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pkgControl.AuthCtrl" stylesheets="@../css/style.css">
     <padding>
         <Insets bottom="40.0" left="40.0" right="40.0" top="40.0"/>
     </padding>
@@ -19,7 +19,7 @@
     <Region prefHeight="20"/>
 
     <VBox spacing="15" alignment="CENTER" maxWidth="300">
-        <Button text="Gestione profilo" onAction="#goToGestioneProfilo" styleClass="primary-button" prefWidth="300"/>
-        <Button text="Gestione stanze" onAction="#goToGestioneStanze" styleClass="secondary-button" prefWidth="300"/>
+        <Button text="Gestione profilo" onAction="#goToGestioneProfilo_HomeCtrl" styleClass="primary-button" prefWidth="300"/>
+        <Button text="Gestione stanze" onAction="#goToGestioneStanze_HomeCtrl" styleClass="secondary-button" prefWidth="300"/>
     </VBox>
 </VBox>

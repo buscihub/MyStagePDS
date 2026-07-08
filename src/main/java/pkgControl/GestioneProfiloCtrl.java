@@ -4,14 +4,9 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import pkgUtility.Router;
 
-/**
- * Controller principale per la schermata del profilo.
- * Ora funge principalmente da contenitore per la barra superiore di navigazione,
- * mentre il contenuto dei Tab è delegato a GestisciDocumentiCtrl e GestioneDatiPersonaliCtrl.
- */
 public class GestioneProfiloCtrl {
 
-    @FXML
+@FXML
     public void goToHome(ActionEvent event) {
         Router.getInstance().navigate("home.fxml", "MyStage - Home");
     }

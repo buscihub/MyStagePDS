@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 
-<VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pkgControl.ModificaNomeArteCtrl" stylesheets="@../css/style.css">
+<VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pkgControl.GestioneDatiPersonaliCtrl" stylesheets="@../css/style.css">
     <padding>
         <Insets bottom="40.0" left="40.0" right="40.0" top="40.0"/>
     </padding>
@@ -16,6 +16,6 @@
         <TextField fx:id="nuovoNomeArteField" promptText="Il tuo nuovo nome d'arte..." styleClass="input-field" prefWidth="300"/>
         <Region prefHeight="10"/>
         <Button text="Conferma" onAction="#salva" styleClass="primary-button" prefWidth="300"/>
-        <Button text="Annulla" onAction="#annulla" styleClass="secondary-button" prefWidth="300"/>
+        <Button text="Annulla" onAction="#annulla_ModificaNomeArteCtrl" styleClass="secondary-button" prefWidth="300"/>
     </VBox>
 </VBox>

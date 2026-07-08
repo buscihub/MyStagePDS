@@ -1,36 +1,40 @@
 package pkgControl;
 
+import java.sql.ResultSet;
+import java.util.UUID;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import pkgBoundary.DBMSboundary;
 import pkgEntity.StanzaEntity;
+import pkgEntity.VisualizzazioneDto;
+import pkgTextmessage.SuccessfulText;
 import pkgUtility.Router;
 import pkgUtility.UserSession;
-import pkgTextmessage.SuccessfulText;
 
-import java.net.URL;
-import java.sql.ResultSet;
-import java.util.ResourceBundle;
-import java.util.UUID;
+public class GestioneStanzeCtrl {
 
-public class GestioneStanzeCtrl implements Initializable {
+    @FXML private TableView<pkgEntity.VisualizzazioneDto> statisticheTable;
 
-    @FXML private TableView<StanzaEntity> stanzeTable;
+    @FXML
+    public void initialize() {
+        try { init_GestioneStanzeCtrl(); } catch(Exception e) { /* ignore */ }
+        try { init_ListaVisualizzatoriCtrl(); } catch(Exception e) { /* ignore */ }
+    }
+
+@FXML private TableView<StanzaEntity> stanzeTable;
     @FXML private TableColumn<StanzaEntity, String> colNome;
     @FXML private TableColumn<StanzaEntity, Void> colAzioni;
     @FXML private TextField nuovoNomeStanzaField;
 
     private ObservableList<StanzaEntity> stanzeList = FXCollections.observableArrayList();
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    private void init_GestioneStanzeCtrl() {
         colNome.setCellValueFactory(new PropertyValueFactory<>("nomeStanza"));
         
         setupAzioniColumn();
@@ -266,5 +270,86 @@ public class GestioneStanzeCtrl implements Initializable {
     @FXML
     public void goToHome(ActionEvent event) {
         Router.getInstance().navigate("home.fxml", "MyStage - Home");
+    }
+
+@FXML private Label titoloLabel;
+// deleted duplicate FXML annotation
+// deleted duplicate line
+    @FXML private TableColumn<VisualizzazioneDto, String> colCognome;
+    @FXML private TableColumn<VisualizzazioneDto, String> colEmail;
+    @FXML private TableColumn<VisualizzazioneDto, String> colData;
+
+    private final ObservableList<VisualizzazioneDto> statisticheList = FXCollections.observableArrayList();
+    private Integer idStanzaCorrente;
+    private String linkStanza;
+
+    private void init_ListaVisualizzatoriCtrl() {
+        if (colNome == null || colCognome == null) return; // Non siamo nella pagina delle statistiche
+
+        idStanzaCorrente = UserSession.getInstance().getStanzaSelezionata();
+        if (idStanzaCorrente == null) {
+            goToStanze(null);
+            return;
+        }
+
+        colNome.setCellValueFactory(new PropertyValueFactory<>("nomeVisualizzatore"));
+        colCognome.setCellValueFactory(new PropertyValueFactory<>("cognomeVisualizzatore"));
+        colEmail.setCellValueFactory(new PropertyValueFactory<>("emailVisualizzatore"));
+        colData.setCellValueFactory(new PropertyValueFactory<>("dataVisualizzazione"));
+
+        recuperaLinkStanza();
+        caricaStatistiche();
+    }
+
+    private void recuperaLinkStanza() {
+        try {
+            ResultSet rs = DBMSboundary.getInstance().queryDBMSLinkStanza(idStanzaCorrente);
+            if (rs != null && rs.next()) {
+                linkStanza = rs.getString("link");
+                titoloLabel.setText("Statistiche Accessi: " + linkStanza);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void caricaStatistiche() {
+        if (linkStanza == null) return;
+        
+        statisticheList.clear();
+        try {
+            ResultSet rs = DBMSboundary.getInstance().queryDBMSListaVisualizzatori(linkStanza);
+            while (rs != null && rs.next()) {
+                statisticheList.add(new VisualizzazioneDto(
+                        rs.getString("nomeVisualizzatore"),
+                        rs.getString("cognomeVisualizzatore"),
+                        rs.getString("emailVisualizzatore"),
+                        rs.getString("dataVisualizzazione")
+                ));
+            }
+            statisticheTable.setItems(statisticheList);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    public void goToProfilo(ActionEvent event) {
+        Router.getInstance().navigate("profilo.fxml", "MyStage - Profilo");
+    }
+
+    @FXML
+    public void goToStanze(ActionEvent event) {
+        UserSession.getInstance().setStanzaSelezionata(null);
+        Router.getInstance().navigate("stanze.fxml", "MyStage - Gestione Stanze");
+    }
+
+    @FXML
+    public void handleLogout(ActionEvent event) {
+        pkgTextmessage.ConfirmText conferma = new pkgTextmessage.ConfirmText("Vuoi davvero disconnetterti?");
+        if (conferma.si()) {
+            UserSession.getInstance().logout();
+            Router.getInstance().navigate("login.fxml", "MyStage - Login");
+        }
     }
 }

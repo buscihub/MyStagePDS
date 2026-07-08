@@ -1,18 +1,36 @@
 package pkgControl;
 
+import java.sql.ResultSet;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import pkgUtility.Router;
-import pkgUtility.EmailSender;
-import pkgUtility.UserSession;
+import pkgBoundary.DBMSboundary;
 import pkgTextmessage.ErrorText;
 import pkgTextmessage.SuccessfulText;
-import pkgBoundary.DBMSboundary;
+import pkgUtility.EmailSender;
+import pkgUtility.Router;
+import pkgUtility.UserSession;
 
 public class AuthCtrl {
 
     @FXML
+    public void initialize() {
+        try { init_AuthCtrl(); } catch(Exception e) { /* ignore */ }
+        try { init_HomeCtrl(); } catch(Exception e) { /* ignore */ }
+    }
+
+@FXML
+    private void init_AuthCtrl() {
+        if (enteSpidCombo != null) {
+            enteSpidCombo.setItems(javafx.collections.FXCollections.observableArrayList("Aruba", "InfoCert", "Poste", "Sielte", "SpidItalia", "TIM"));
+        }
+        if (sessoField != null) {
+            sessoField.setItems(javafx.collections.FXCollections.observableArrayList("M", "F", "Altro"));
+        }
+    }
+
+@FXML
     private TextField emailField;
     @FXML
     private javafx.scene.control.PasswordField passwordField;
@@ -22,36 +40,36 @@ public class AuthCtrl {
     private javafx.scene.control.Label providerLabel;
 
     @FXML
-    public void initialize() {
-        if (sessoField != null) {
-            sessoField.getItems().addAll("M", "F", "ND");
-        }
-        if (enteSpidCombo != null) {
-            enteSpidCombo.getItems().addAll("PosteID", "Aruba ID", "SpidItalia", "Sielte id", "InfoCert ID");
-        }
-        
-        String providerSelezionato = (String) UserSession.getInstance().retrieveFromCache("providerSPID");
-        if (providerLabel != null && providerSelezionato != null) {
-            providerLabel.setText("Provider selezionato: " + providerSelezionato);
-        }
-        
-        @SuppressWarnings("unchecked")
-        java.util.Map<String, String> formData = (java.util.Map<String, String>) pkgUtility.UserSession.getInstance().retrieveFromCache("registrazione_form");
-        if (formData != null) {
-            if (emailField != null) emailField.setText(formData.get("email"));
-            if (nomeField != null) nomeField.setText(formData.get("nome"));
-            if (cognomeField != null) cognomeField.setText(formData.get("cognome"));
-            if (codiceFiscaleField != null) codiceFiscaleField.setText(formData.get("cf"));
-            if (nomeDarteField != null) nomeDarteField.setText(formData.get("nomeDarte"));
-            if (carrieraField != null) carrieraField.setText(formData.get("carriera"));
-            if (passwordField != null && formData.get("password") != null) passwordField.setText(formData.get("password"));
-            if (anniCarrieraField != null) anniCarrieraField.setText(formData.get("anniCarriera"));
-            if (dataNascitaField != null && formData.get("dataNascita") != null && !formData.get("dataNascita").isEmpty()) {
-                try { dataNascitaField.setValue(java.time.LocalDate.parse(formData.get("dataNascita"))); } catch(Exception e) {}
-            }
-            if (sessoField != null && formData.get("sesso") != null) sessoField.setValue(formData.get("sesso"));
-        }
-    }
+// deleted method duplicate
+// deleted method duplicate
+// deleted method duplicate
+// deleted method duplicate
+// deleted method duplicate
+// deleted method duplicate
+// deleted method duplicate
+// deleted method duplicate
+// deleted method duplicate
+// deleted method duplicate
+// deleted method duplicate
+// deleted method duplicate
+// deleted method duplicate
+// deleted method duplicate
+// deleted method duplicate
+// deleted method duplicate
+// deleted method duplicate
+// deleted method duplicate
+// deleted method duplicate
+// deleted method duplicate
+// deleted method duplicate
+// deleted method duplicate
+// deleted method duplicate
+// deleted method duplicate
+// deleted method duplicate
+// deleted method duplicate
+// deleted method duplicate
+// deleted method duplicate
+// deleted method duplicate
+// deleted method duplicate
 
     private void salvaCacheRegistrazione(String email, String password, String nome, String cognome, String cf, String nomeDarte, String carriera, String anniCarriera, String dataNascita, String sesso) {
         java.util.Map<String, String> formData = new java.util.HashMap<>();
@@ -283,5 +301,247 @@ public class AuthCtrl {
     public void cercaArtistiGuest(ActionEvent event) {
         UserSession.getInstance().setUtenteLoggato(null); // Assicuriamoci che non ci sia sessione
         Router.getInstance().navigate("cerca_artista.fxml", "MyStage - Ricerca Artisti");
+    }
+
+@FXML
+    private TextField codiceField;
+
+    @FXML
+    public void handleInvia(ActionEvent event) {
+        String codice = codiceField.getText();
+        String email = UserSession.getInstance().getEmailInVerifica();
+        String azione = UserSession.getInstance().getAzioneVerifica();
+
+        if (codice == null || codice.isEmpty()) {
+            new ErrorText("Inserisci un codice valido.").okay();
+            return;
+        }
+
+        try {
+            ResultSet rs = DBMSboundary.getInstance().queryDBMSVerificaCodice(email, codice);
+            if (rs != null && rs.next()) {
+                String cf = rs.getString("codiceFiscale");
+
+                if ("LOGIN".equals(azione)) {
+                    UserSession.getInstance().setUtenteLoggato(cf);
+                    Router.getInstance().navigate("home.fxml", "MyStage - Home Artista");
+                } else if ("RECUPERO".equals(azione)) {
+                    // RAD rcpr_pswd step 6.5: mostra la password corrente e reindirizza al login
+                    String currentPassword = rs.getString("password");
+                    new pkgTextmessage.SuccessfulText("La tua password corrente è: " + currentPassword
+                            + "\nAccedi e cambiala subito dal pannello Gestione Profilo.").okay();
+                    Router.getInstance().navigate("login.fxml", "MyStage - Login");
+                }
+            } else {
+                if ("LOGIN".equals(azione)) {
+                    new ErrorText("Codice errato").okay();
+                } else if ("RECUPERO".equals(azione)) {
+                    new ErrorText("Codice non valido").okay();
+                } else {
+                    new ErrorText("Codice OTP errato. Riprova.").okay();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            new ErrorText("Errore durante la verifica del codice.").okay();
+        }
+    }
+
+    @FXML
+    public void handleTornaIndietro(ActionEvent event) {
+        Router.getInstance().navigate("login.fxml", "MyStage - Login");
+    }
+
+@FXML
+    private TextField emailRecuperoField;
+
+    @FXML
+    public void handleInviaEmail(ActionEvent event) {
+        String email = emailRecuperoField.getText();
+        if (email == null || email.trim().isEmpty()) {
+            new ErrorText("Inserisci la tua email.").okay();
+            return;
+        }
+
+        try {
+            ResultSet rs = DBMSboundary.getInstance().queryDBMSVerificaEmail(email.trim());
+            if (rs != null && rs.next()) {
+                // RAD rcpr_pswd passo 6.1 — genera, salva e invia OTP
+                String otp = String.format("%06d", new java.util.Random().nextInt(999999));
+                DBMSboundary.getInstance().insertDBMScodice(email.trim(), otp);
+
+                boolean sent = EmailSender.inviaCodice2FA(email.trim(), otp);
+                if (sent) {
+                    UserSession.getInstance().setEmailInVerifica(email.trim());
+                    UserSession.getInstance().setAzioneVerifica("RECUPERO");
+                    // RAD passo 6.2 — compare il form "Inserisci codice di recupero"
+                    Router.getInstance().navigate("inserisci_codice.fxml", "MyStage - Verifica 2FA");
+                } else {
+                    new ErrorText("Errore durante l'invio dell'email.").okay();
+                }
+            } else {
+                // RAD passo 5.1 — "Indirizzo email inesistente"
+                new ErrorText("Indirizzo email inesistente.").okay();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            new ErrorText("Errore di connessione al sistema.").okay();
+        }
+    }
+
+    @FXML
+    public void handleTornaLogin(ActionEvent event) {
+        Router.getInstance().navigate("login.fxml", "MyStage - Login");
+    }
+
+@FXML
+    private Label nomeArteLabel;
+
+    @FXML
+    private void init_HomeCtrl() {
+        String cf = UserSession.getInstance().getUtenteLoggato();
+        if (cf == null) return;
+        
+        try {
+            ResultSet rs = DBMSboundary.getInstance().queryDBMSProfiloArtista(cf);
+            if (rs != null && rs.next()) {
+                String nomeArte = rs.getString("nomeDarte");
+                if (nomeArte != null && !nomeArte.isEmpty()) {
+                    nomeArteLabel.setText(nomeArte);
+                } else {
+                    nomeArteLabel.setText("Nessun nome d'arte");
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    public void goToGestioneProfilo(ActionEvent event) {
+        Router.getInstance().navigate("profilo.fxml", "MyStage - Gestione Profilo");
+    }
+
+    @FXML
+    public void goToGestioneStanze(ActionEvent event) {
+        Router.getInstance().navigate("stanze.fxml", "MyStage - Gestione Stanze");
+    }
+
+
+    @FXML
+    public void handleInvia_InserisciCodiceCtrl(ActionEvent event) {
+        String codice = codiceField.getText();
+        String email = UserSession.getInstance().getEmailInVerifica();
+        String azione = UserSession.getInstance().getAzioneVerifica();
+
+        if (codice == null || codice.isEmpty()) {
+            new ErrorText("Inserisci un codice valido.").okay();
+            return;
+        }
+
+        try {
+            ResultSet rs = DBMSboundary.getInstance().queryDBMSVerificaCodice(email, codice);
+            if (rs != null && rs.next()) {
+                String cf = rs.getString("codiceFiscale");
+
+                if ("LOGIN".equals(azione)) {
+                    UserSession.getInstance().setUtenteLoggato(cf);
+                    Router.getInstance().navigate("home.fxml", "MyStage - Home Artista");
+                } else if ("RECUPERO".equals(azione)) {
+                    // RAD rcpr_pswd step 6.5: mostra la password corrente e reindirizza al login
+                    String currentPassword = rs.getString("password");
+                    new pkgTextmessage.SuccessfulText("La tua password corrente è: " + currentPassword
+                            + "\nAccedi e cambiala subito dal pannello Gestione Profilo.").okay();
+                    Router.getInstance().navigate("login.fxml", "MyStage - Login");
+                }
+            } else {
+                if ("LOGIN".equals(azione)) {
+                    new ErrorText("Codice errato").okay();
+                } else if ("RECUPERO".equals(azione)) {
+                    new ErrorText("Codice non valido").okay();
+                } else {
+                    new ErrorText("Codice OTP errato. Riprova.").okay();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            new ErrorText("Errore durante la verifica del codice.").okay();
+        }
+    }
+
+    @FXML
+    public void handleTornaIndietro_InserisciCodiceCtrl(ActionEvent event) {
+        Router.getInstance().navigate("login.fxml", "MyStage - Login");
+    }
+
+
+    @FXML
+    public void handleInviaEmail_RecuperaPasswordCtrl(ActionEvent event) {
+        String email = emailRecuperoField.getText();
+        if (email == null || email.trim().isEmpty()) {
+            new ErrorText("Inserisci la tua email.").okay();
+            return;
+        }
+
+        try {
+            ResultSet rs = DBMSboundary.getInstance().queryDBMSVerificaEmail(email.trim());
+            if (rs != null && rs.next()) {
+                // RAD rcpr_pswd passo 6.1 — genera, salva e invia OTP
+                String otp = String.format("%06d", new java.util.Random().nextInt(999999));
+                DBMSboundary.getInstance().insertDBMScodice(email.trim(), otp);
+
+                boolean sent = EmailSender.inviaCodice2FA(email.trim(), otp);
+                if (sent) {
+                    UserSession.getInstance().setEmailInVerifica(email.trim());
+                    UserSession.getInstance().setAzioneVerifica("RECUPERO");
+                    // RAD passo 6.2 — compare il form "Inserisci codice di recupero"
+                    Router.getInstance().navigate("inserisci_codice.fxml", "MyStage - Verifica 2FA");
+                } else {
+                    new ErrorText("Errore durante l'invio dell'email.").okay();
+                }
+            } else {
+                // RAD passo 5.1 — "Indirizzo email inesistente"
+                new ErrorText("Indirizzo email inesistente.").okay();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            new ErrorText("Errore di connessione al sistema.").okay();
+        }
+    }
+
+    @FXML
+    public void handleTornaLogin_RecuperaPasswordCtrl(ActionEvent event) {
+        Router.getInstance().navigate("login.fxml", "MyStage - Login");
+    }
+
+
+    @FXML
+    private void init_HomeCtrl_HomeCtrl() {
+        String cf = UserSession.getInstance().getUtenteLoggato();
+        if (cf == null) return;
+        
+        try {
+            ResultSet rs = DBMSboundary.getInstance().queryDBMSProfiloArtista(cf);
+            if (rs != null && rs.next()) {
+                String nomeArte = rs.getString("nomeDarte");
+                if (nomeArte != null && !nomeArte.isEmpty()) {
+                    nomeArteLabel.setText(nomeArte);
+                } else {
+                    nomeArteLabel.setText("Nessun nome d'arte");
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    public void goToGestioneProfilo_HomeCtrl(ActionEvent event) {
+        Router.getInstance().navigate("profilo.fxml", "MyStage - Gestione Profilo");
+    }
+
+    @FXML
+    public void goToGestioneStanze_HomeCtrl(ActionEvent event) {
+        Router.getInstance().navigate("stanze.fxml", "MyStage - Gestione Stanze");
     }
 }

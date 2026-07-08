@@ -2,12 +2,21 @@ package pkgControl;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import pkgUtility.UserSession;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import pkgBoundary.DBMSboundary;
+import pkgEntity.DocumentoEntity;
+import pkgUtility.UserSession;
 
 public class GestisciDocumentiCtrl {
 
-    private String getUtenteCorrente() {
+    @FXML
+    public void initialize() {
+        try { init_EliminaDocumentiCtrl(); } catch(Exception e) { /* ignore */ }
+        try { init_CambiaStatoDocumentiCtrl(); } catch(Exception e) { /* ignore */ }
+    }
+
+private String getUtenteCorrente() {
         return UserSession.getInstance().getUtenteLoggato();
     }
 
@@ -92,5 +101,132 @@ public class GestisciDocumentiCtrl {
     @FXML
     public void goBack(ActionEvent event) {
         pkgUtility.Router.getInstance().navigate("profilo.fxml", "MyStage - Profilo");
+    }
+
+@FXML
+    private TableView<DocumentoEntity> documentiTable;
+
+    @FXML
+    private TableColumn<DocumentoEntity, String> percorsoCol;
+
+    @FXML
+    private TableColumn<DocumentoEntity, Void> selezioneCol;
+
+    private java.util.Set<Integer> selectedDocIds = new java.util.HashSet<>();
+
+
+    @FXML
+    private void init_EliminaDocumentiCtrl() {
+        percorsoCol.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("percorso"));
+        
+        selezioneCol.setCellFactory(col -> new javafx.scene.control.TableCell<>() {
+            private final javafx.scene.control.CheckBox cb = new javafx.scene.control.CheckBox();
+            {
+                cb.setOnAction(e -> {
+                    DocumentoEntity doc = getTableView().getItems().get(getIndex());
+                    if (cb.isSelected()) {
+                        selectedDocIds.add(doc.getIdDocumento());
+                    } else {
+                        selectedDocIds.remove(doc.getIdDocumento());
+                    }
+                });
+            }
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    DocumentoEntity doc = getTableView().getItems().get(getIndex());
+                    cb.setSelected(selectedDocIds.contains(doc.getIdDocumento()));
+                    setGraphic(cb);
+                }
+            }
+        });
+
+        loadDocumenti();
+    }
+
+    private void loadDocumenti() {
+        try {
+            selectedDocIds.clear();
+            documentiTable.getItems().clear();
+            java.sql.ResultSet rs = DBMSboundary.getInstance().queryDBMSListaDocumenti(getUtenteCorrente());
+            while (rs != null && rs.next()) {
+                DocumentoEntity doc = new DocumentoEntity(
+                    rs.getInt("idDocumento"),
+                    rs.getString("codiceFiscaleArtist"),
+                    rs.getBoolean("visibile"),
+                    rs.getString("percorso")
+                );
+                documentiTable.getItems().add(doc);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    public void eliminaSelezionati(ActionEvent event) {
+        if (selectedDocIds.isEmpty()) {
+            new pkgTextmessage.ErrorText("Nessun documento selezionato.").okay();
+            return;
+        }
+        pkgTextmessage.ConfirmText conferma = new pkgTextmessage.ConfirmText("Vuoi davvero eliminare i " + selectedDocIds.size() + " documenti selezionati?");
+        if (conferma.si()) {
+            for (int id : selectedDocIds) {
+                DBMSboundary.getInstance().queryDBMSRemoveDocumenti(id);
+            }
+            new pkgTextmessage.SuccessfulText("Documenti eliminati con successo.").okay();
+            loadDocumenti();
+        }
+    }
+
+    @FXML
+    public void goBack_EliminaDocumentiCtrl(ActionEvent event) {
+        pkgUtility.Router.getInstance().navigate("gestisci_documenti.fxml", "MyStage - Gestisci Documenti");
+    }
+
+
+// deleted duplicate FXML annotation
+// deleted duplicate line
+
+    @FXML
+    private TableColumn<DocumentoEntity, Boolean> visibileCol;
+
+
+    @FXML
+    private void init_CambiaStatoDocumentiCtrl() {
+        percorsoCol.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("percorso"));
+        
+        visibileCol.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("visibile"));
+        visibileCol.setCellFactory(col -> new javafx.scene.control.TableCell<>() {
+            private final javafx.scene.control.CheckBox checkBox = new javafx.scene.control.CheckBox();
+            {
+                checkBox.setOnAction(e -> {
+                    DocumentoEntity doc = getTableView().getItems().get(getIndex());
+                    doc.setVisibile(checkBox.isSelected());
+                    DBMSboundary.getInstance().queryDBMSUpdateStatoDocumenti(doc.getIdDocumento(), checkBox.isSelected());
+                });
+            }
+            @Override
+            protected void updateItem(Boolean item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    checkBox.setSelected(item);
+                    setGraphic(checkBox);
+                }
+            }
+        });
+
+        loadDocumenti();
+    }
+
+
+    @FXML
+    public void goBack_CambiaStatoDocumentiCtrl(ActionEvent event) {
+        pkgUtility.Router.getInstance().navigate("gestisci_documenti.fxml", "MyStage - Gestisci Documenti");
     }
 }
